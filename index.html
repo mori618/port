@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Works | ポートフォリオ</title>
+  <meta name="description" content="ゲーム・WebサービスなどのオリジナルWEB制作物をまとめたポートフォリオサイトです。" />
+  <meta property="og:title" content="My Works | ポートフォリオ" />
+  <meta property="og:description" content="ゲーム・WebサービスなどのオリジナルWEB制作物をまとめたポートフォリオサイトです。" />
+  <meta property="og:type" content="website" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            accent: {
+              DEFAULT: '#6C63FF',
+              dark: '#5a52d4',
+            },
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(12px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+          animation: {
+            fadeIn: 'fadeIn 0.4s ease both',
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- React + Babel (CDN) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* スクロールバーのカスタマイズ */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #6C63FF55; border-radius: 99px; }
+
+    /* カードホバーエフェクト */
+    .project-card {
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* サムネイル画像のズームエフェクト */
+    .thumb-wrap { overflow: hidden; }
+    .thumb-wrap img {
+      transition: transform 0.4s ease;
+    }
+    .project-card:hover .thumb-wrap img {
+      transform: scale(1.06);
+    }
+
+    /* タグボタン */
+    .tag-btn {
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    /* ===== ユーティリティ ===== */
+    // サムネイルが存在しない場合のフォールバック画像（グラデーション生成）
+    function PlaceholderThumb({ title }) {
+      const colors = [
+        ['#6C63FF', '#a78bfa'],
+        ['#f59e0b', '#fb923c'],
+        ['#10b981', '#34d399'],
+        ['#3b82f6', '#60a5fa'],
+        ['#ef4444', '#f87171'],
+        ['#8b5cf6', '#c084fc'],
+      ];
+      const idx = (title.charCodeAt(0) || 0) % colors.length;
+      const [c1, c2] = colors[idx];
+      return (
+        <div
+          className="w-full h-48 flex items-center justify-center text-white text-4xl font-bold select-none"
+          style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+        >
+          {title.charAt(0)}
+        </div>
+      );
+    }
+
+    /* ===== プロジェクトカード ===== */
+    function ProjectCard({ project, onTagClick, selectedTags }) {
+      const [imgError, setImgError] = useState(false);
+      return (
+        <a
+          href={project.detail_url}
+          className="project-card block rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl dark:hover:shadow-gray-800 animate-fadeIn"
+          aria-label={`${project.title}の詳細ページへ`}
+        >
+          <div className="thumb-wrap h-48 bg-gray-200 dark:bg-gray-800">
+            {imgError ? (
+              <PlaceholderThumb title={project.title} />
+            ) : (
+              <img
+                src={project.thumbnail}
+                alt={`${project.title}のサムネイル`}
+                className="w-full h-48 object-cover"
+                onError={() => setImgError(true)}
+                loading="lazy"
+              />
+            )}
+          </div>
+          <div className="p-5">
+            <h2 className="text-base font-bold mb-1 line-clamp-1">{project.title}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2 leading-relaxed">{project.description_short}</p>
+            <div className="flex flex-wrap gap-1.5">
+              {project.tags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={e => { e.preventDefault(); onTagClick(tag); }}
+                  className={`tag-btn text-xs px-2.5 py-1 rounded-full border font-medium
+                    ${selectedTags.includes(tag)
+                      ? 'bg-accent text-white border-accent dark:bg-accent dark:border-accent'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-accent hover:text-accent dark:hover:border-accent dark:hover:text-accent'
+                    }`}
+                  aria-pressed={selectedTags.includes(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        </a>
+      );
+    }
+
+    /* ===== アプリ本体 ===== */
+    function App() {
+      const [projects, setProjects] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [selectedTags, setSelectedTags] = useState([]);
+      const [sortKey, setSortKey] = useState('newest');
+
+      /* JSONデータ読み込み */
+      useEffect(() => {
+        fetch('./projects.json')
+          .then(res => {
+            if (!res.ok) throw new Error('データの読み込みに失敗しました');
+            return res.json();
+          })
+          .then(data => { setProjects(data); setLoading(false); })
+          .catch(err => { setError(err.message); setLoading(false); });
+      }, []);
+
+      /* 全タグ一覧（重複なし） */
+      const allTags = useMemo(() => {
+        const set = new Set();
+        projects.forEach(p => p.tags.forEach(t => set.add(t)));
+        return [...set];
+      }, [projects]);
+
+      /* タグ選択トグル */
+      const toggleTag = tag => {
+        setSelectedTags(prev =>
+          prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+        );
+      };
+
+      /* フィルター & ソート */
+      const filteredProjects = useMemo(() => {
+        let result = projects;
+
+        /* AND フィルター */
+        if (selectedTags.length > 0) {
+          result = result.filter(p =>
+            selectedTags.every(tag => p.tags.includes(tag))
+          );
+        }
+
+        /* ソート */
+        result = [...result].sort((a, b) => {
+          if (sortKey === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+          if (sortKey === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
+          if (sortKey === 'name')   return a.title.localeCompare(b.title, 'ja');
+          return 0;
+        });
+
+        return result;
+      }, [projects, selectedTags, sortKey]);
+
+      return (
+        <div className="max-w-5xl mx-auto px-4 py-10">
+
+          {/* ===== ヘッダー ===== */}
+          <header className="mb-10 text-center">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></span>
+              <span className="text-xs font-semibold tracking-widest uppercase text-accent">Portfolio</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
+              My Works
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+              ゲーム・Webサービスなどのオリジナル制作物をまとめています。
+            </p>
+          </header>
+
+          {/* ===== 広告枠（上部） ===== */}
+          {/* <div className="mb-8 text-center">
+            ここにGoogle AdSense コードを挿入
+          </div> */}
+
+          {/* ===== コントロールパネル ===== */}
+          <div className="mb-8 space-y-4">
+            {/* タグフィルター */}
+            <div>
+              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-2 tracking-wider uppercase">フィルター（AND検索）</p>
+              <div className="flex flex-wrap gap-2" role="group" aria-label="タグフィルター">
+                {allTags.map(tag => (
+                  <button
+                    key={tag}
+                    id={`filter-tag-${tag}`}
+                    onClick={() => toggleTag(tag)}
+                    className={`tag-btn text-sm px-3.5 py-1.5 rounded-full border font-medium
+                      ${selectedTags.includes(tag)
+                        ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
+                        : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-accent hover:text-accent dark:hover:border-accent dark:hover:text-accent'
+                      }`}
+                    aria-pressed={selectedTags.includes(tag)}
+                  >
+                    {tag}
+                  </button>
+                ))}
+                {selectedTags.length > 0 && (
+                  <button
+                    onClick={() => setSelectedTags([])}
+                    className="text-sm px-3.5 py-1.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:text-red-400 hover:border-red-300 transition-colors"
+                    aria-label="フィルターをリセット"
+                  >
+                    ✕ リセット
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* ソートと件数表示 */}
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                <span className="text-gray-700 dark:text-gray-200 font-semibold">{filteredProjects.length}</span>
+                &nbsp;件の制作物
+              </p>
+              <select
+                id="sort-select"
+                value={sortKey}
+                onChange={e => setSortKey(e.target.value)}
+                className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer"
+                aria-label="並び替え"
+              >
+                <option value="newest">新しい順</option>
+                <option value="oldest">古い順</option>
+                <option value="name">名前順</option>
+              </select>
+            </div>
+          </div>
+
+          {/* ===== プロジェクト一覧 ===== */}
+          {loading && (
+            <div className="text-center py-24 text-gray-400">
+              <div className="inline-block w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p>読み込み中...</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center py-24 text-red-400">
+              <p className="text-2xl mb-2">⚠️</p>
+              <p>{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && filteredProjects.length === 0 && (
+            <div className="text-center py-24 text-gray-400 dark:text-gray-600">
+              <p className="text-4xl mb-3">🔍</p>
+              <p>条件に一致する制作物が見つかりませんでした。</p>
+            </div>
+          )}
+
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map(project => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  onTagClick={toggleTag}
+                  selectedTags={selectedTags}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* ===== 広告枠（下部） ===== */}
+          {/* <div className="mt-12 text-center">
+            ここにGoogle AdSense コードを挿入
+          </div> */}
+
+          {/* ===== フッター ===== */}
+          <footer className="mt-16 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
+            <p>© {new Date().getFullYear()} My Works. All rights reserved.</p>
+          </footer>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
