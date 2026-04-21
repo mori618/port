@@ -3,142 +3,181 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- ===== 各制作物に合わせてここを変更してください ===== -->
-  <title>Puzzle Rogue | My Works</title>
-  <meta name="description" content="ブラウザで遊べるパズル×ローグライクゲーム。コンボを繋いで強力なトークンを獲得しよう！" />
-  <meta property="og:title" content="Puzzle Rogue | My Works" />
-  <meta property="og:description" content="ブラウザで遊べるパズル×ローグライクゲーム。コンボを繋いで強力なトークンを獲得しよう！" />
+  <title>Puzzle Rogue | 遊んでみよう！</title>
+  <meta name="description" content="パズル×ローグライク！コンボを繋いで強力なトークンを獲得し、ランダム生成のダンジョンを攻略しよう！" />
+  <meta property="og:title" content="Puzzle Rogue | 新感覚パズル×ローグライク" />
+  <meta property="og:description" content="パズル×ローグライク！コンボを繋いで強力なトークンを獲得し、ランダム生成のダンジョンを攻略しよう！" />
   <meta property="og:image" content="../images/puzzle-rogue-thumb.jpg" />
-  <meta property="og:type" content="article" />
+  <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-  <!-- ================================================== -->
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'media',
+      darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'],
+          fontFamily: { sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'] },
+          colors: { 
+            game: { 
+              primary: '#8b5cf6',
+              secondary: '#ec4899',
+              accent: '#fcd34d',
+              dark: '#0f172a'
+            } 
           },
-          colors: {
-            accent: { DEFAULT: '#6C63FF', dark: '#5a52d4' },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
           },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
         },
       },
     };
   </script>
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; }
+    .hero-bg {
+      background: radial-gradient(circle at top, rgba(139,92,246,0.2) 0%, rgba(15,23,42,1) 70%);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px rgba(139, 92, 246, 0.8), 0 0 20px rgba(139, 92, 246, 0.4);
+    }
+    .game-button {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5), 0 8px 10px -6px rgba(236, 72, 153, 0.5);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-button:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 20px 35px -5px rgba(139, 92, 246, 0.6), 0 10px 15px -6px rgba(236, 72, 153, 0.6);
+    }
+    .game-button:active {
+      transform: translateY(2px) scale(0.98);
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) skewX(-15deg); }
+      100% { transform: translateX(200%) skewX(-15deg); }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
-  <div class="max-w-3xl mx-auto px-4 py-10">
+<body class="font-sans min-h-screen hero-bg">
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    
+    <nav class="mb-12">
+      <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        一覧に戻る
+      </a>
+    </nav>
 
-    <!-- ===== 戻るボタン ===== -->
-    <a
-      href="../index.html"
-      id="back-to-list"
-      class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent font-medium mb-8 transition-colors"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-      一覧に戻る
-    </a>
-
-    <!-- ===== メインコンテンツ ===== -->
-    <article>
-
-      <!-- タイトル -->
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Puzzle Rogue</h1>
-
-      <!-- メタ情報 -->
-      <div class="flex flex-wrap items-center gap-3 mb-6 text-sm text-gray-400 dark:text-gray-500">
-        <span>🗓 制作：2024年4月</span>
-        <span>•</span>
-        <span>🔄 最終更新：2024年4月</span>
+    <header class="text-center mb-16 relative">
+      <div class="inline-block animate-float mb-4">
+        <span class="text-7xl">🧩</span>
       </div>
+      <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter neon-text">
+        Puzzle Rogue
+      </h1>
+      <p class="text-xl md:text-2xl font-bold text-indigo-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+        脳汁溢れる大連鎖！<br class="md:hidden" />パズルのコンボで敵をなぎ倒す<br />新感覚ローグライクRPG！
+      </p>
 
-      <!-- タグ -->
-      <div class="flex flex-wrap gap-2 mb-8">
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ゲーム</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">パズル</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ローグライク</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">React</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">JavaScript</span>
-      </div>
-
-      <!-- メイン画像 -->
-      <div class="rounded-2xl overflow-hidden mb-8 bg-gray-200 dark:bg-gray-800 aspect-video flex items-center justify-center">
-        <img
-          src="../images/puzzle-rogue-thumb.jpg"
-          alt="Puzzle Rogueのスクリーンショット"
-          class="w-full object-cover"
-          onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>🎮 No Image</div>'"
-        />
-      </div>
-
-      <!-- 詳細説明 -->
-      <section class="mb-8 space-y-4 text-base leading-relaxed text-gray-700 dark:text-gray-300">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">📖 制作物について</h2>
-        <p>
-          ブラウザで遊べるパズル×ローグライク要素を掛け合わせたオリジナルゲームです。
-          コンボを繋げることで強力なトークンを獲得し、ランダムに生成されるダンジョンを攻略していきます。
-        </p>
-        <p>
-          Reactを使用してSPA構成で実装しており、ゲーム状態はlocalStorageを利用して
-          ブラウザ上で管理されます。
-        </p>
-      </section>
-
-      <!-- 技術スタック -->
-      <section class="mb-10">
-        <h2 class="text-xl font-bold mb-3">🛠 使用技術</h2>
-        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 text-sm">
-          <li>React 18 (Vite)</li>
-          <li>Tailwind CSS</li>
-          <li>JavaScript (ES2022)</li>
-          <li>localStorage</li>
-        </ul>
-      </section>
-
-      <!-- アクションボタン -->
-      <div class="flex flex-wrap gap-4 mb-12">
-        <a
-          id="play-game-btn"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-dark transition-colors shadow-lg shadow-accent/20 hover:shadow-accent/30"
-        >
-          🎮 ゲームをプレイ
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      <div class="flex justify-center mb-12">
+        <a href="#" target="_blank" rel="noopener noreferrer" id="play-game-btn"
+           class="game-button relative px-10 py-5 rounded-2xl text-white font-black text-2xl md:text-3xl flex items-center gap-4 group overflow-hidden">
+          <div class="absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-[-15deg] group-hover:animate-[shimmer_1.5s_infinite]"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 md:w-10 md:h-10 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
           </svg>
+          今すぐプレイ！
         </a>
-        <!-- GitHubリンク（任意） -->
-        <!-- <a href="#" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium hover:border-accent hover:text-accent transition-colors">
-          📦 ソースコード
-        </a> -->
       </div>
+      
+      <div class="relative max-w-3xl mx-auto rounded-3xl overflow-hidden border-4 border-slate-700 shadow-2xl shadow-indigo-900/50 group bg-slate-800">
+        <img src="../images/puzzle-rogue-thumb.jpg" alt="Puzzle Rogueのプレイ画面"
+             class="w-full object-cover group-hover:scale-105 transition-transform duration-700"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full aspect-video bg-gradient-to-br from-indigo-600 to-fuchsia-900 flex flex-col items-center justify-center text-white gap-4\'><span class=\'text-8xl\'>🧩</span><span class=\'text-3xl font-black\'>PUZZLE ROGUE</span></div>'" />
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+      </div>
+    </header>
 
-      <!-- ===== 広告枠（コンテンツ下部） ===== -->
-      <!-- <div class="text-center mb-8">
-        ここにGoogle AdSense コードを挿入
+    <main class="grid md:grid-cols-2 gap-8 mb-16">
+      <section class="bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-700">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+          <span class="text-3xl">🔥</span> 熱狂のポイント
+        </h2>
+        <div class="space-y-6">
+          <p class="text-lg text-slate-300 font-bold leading-relaxed">
+            パズルの腕前が世界を救う！
+          </p>
+          <p class="text-slate-400 leading-relaxed">
+            「パズル」と「ローグライク」の融合。あなたの閃きがそのまま強力な一撃に！ピースを繋げて大連鎖を叩き込み、立ちはだかるモンスターを蹴散らせ。
+          </p>
+          <p class="text-slate-400 leading-relaxed">
+            ダンジョンは遊ぶたびにランダム生成されます。道中で手に入る様々な性能のトークンを組み合わせ、自分だけの最強ビルドを作ろう！
+          </p>
+        </div>
+      </section>
+
+      <section class="bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-700">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+          <span class="text-3xl">🎮</span> 遊び方
+        </h2>
+        <div class="space-y-6">
+          
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-fuchsia-500/20 text-fuchsia-400 flex flex-col justify-center items-center font-black text-xl border border-fuchsia-500/30 shrink-0">1</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-fuchsia-200">パズルを連鎖させる</h3>
+              <p class="text-slate-400 text-sm">ピースを繋げて大コンボを発生させろ！</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-indigo-500/20 text-indigo-400 flex flex-col justify-center items-center font-black text-xl border border-indigo-500/30 shrink-0">2</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-indigo-200">強力なスキルを獲得</h3>
+              <p class="text-slate-400 text-sm">ダンジョンでトークンを取って永続強化！</p>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-500 flex flex-col justify-center items-center font-black text-xl border border-yellow-500/30 shrink-0">3</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-yellow-200">奥深くまで挑む</h3>
+              <p class="text-slate-400 text-sm">ランダム生成の試練を超え、深層のボスを討て。</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 pt-8 pb-12 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-slate-500 text-sm">
+        <span class="font-bold">開発技術:</span> React 18 / Tailwind CSS / localStorage
+      </div>
+      
+      <!-- もしソースコードを公開する場合はここに記載 -->
+      <!-- <div class="flex gap-4">
+        <a href="#" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 hover:text-white transition-colors">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          ソースコードを見る
+        </a>
       </div> -->
-
-    </article>
-
-    <!-- ===== フッター ===== -->
-    <footer class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
-      <p>© <script>document.write(new Date().getFullYear())</script> My Works. All rights reserved.</p>
     </footer>
 
   </div>

@@ -3,148 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>フィッシング・エボリューション | My Works</title>
-  <meta name="description" content="魚を釣って売り、釣り竿を強化していく成長型釣りゲーム。35種の魚と豊富なスキルビルドが楽しめる。" />
-  <meta property="og:title" content="フィッシング・エボリューション | My Works" />
-  <meta property="og:description" content="魚を釣って売り、釣り竿を強化していく成長型釣りゲーム。35種の魚と豊富なスキルビルドが楽しめる。" />
+  <title>フィッシング・エボリューション | 遊んでみよう！</title>
+  <meta name="description" content="魚を釣って売り、釣り竿を強化！35種の魚と豊富なスキルビルドが楽しめる成長型釣りゲーム。" />
+  <meta property="og:title" content="フィッシング・エボリューション | 海の覇者を目指せ！" />
+  <meta property="og:description" content="魚を釣って売り、釣り竿を強化！35種の魚と豊富なスキルビルドが楽しめる成長型釣りゲーム。" />
   <meta property="og:image" content="../images/fishing-thumb.jpg" />
-  <meta property="og:type" content="article" />
+  <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'media',
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: { sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'] },
-          colors: { accent: { DEFAULT: '#6C63FF', dark: '#5a52d4' } },
+          colors: { 
+            game: { 
+              primary: '#0ea5e9',
+              secondary: '#10b981',
+              accent: '#f59e0b',
+              dark: '#0f172a'
+            } 
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
         },
       },
     };
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    body { background-color: #0f172a; color: #f8fafc; }
+    .hero-bg {
+      background: radial-gradient(circle at top, rgba(6,182,212,0.2) 0%, rgba(15,23,42,1) 70%);
+    }
+    .neon-text {
+      text-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 20px rgba(6, 182, 212, 0.4);
+    }
+    .game-button {
+      background: linear-gradient(135deg, #06b6d4, #0284c7);
+      box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.5), 0 8px 10px -6px rgba(2, 132, 199, 0.5);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-button:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 20px 35px -5px rgba(2, 132, 199, 0.6), 0 10px 15px -6px rgba(2, 132, 199, 0.6);
+    }
+    .game-button:active {
+      transform: translateY(2px) scale(0.98);
+    }
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) skewX(-15deg); }
+      100% { transform: translateX(200%) skewX(-15deg); }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
-  <div class="max-w-3xl mx-auto px-4 py-10">
+<body class="font-sans min-h-screen hero-bg">
+  
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    
+    <nav class="mb-12">
+      <a href="../index.html" class="inline-flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-white transition-colors bg-white/10 px-4 py-2 rounded-full backdrop-blur-sm border border-white/10">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        一覧に戻る
+      </a>
+    </nav>
 
-    <!-- 戻るボタン -->
-    <a href="../index.html" id="back-to-list"
-       class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent font-medium mb-8 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-      一覧に戻る
-    </a>
-
-    <article>
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">🎣 フィッシング・エボリューション</h1>
-
-      <div class="flex flex-wrap items-center gap-3 mb-6 text-sm text-gray-400 dark:text-gray-500">
-        <span>🗓 制作：2025年1月</span>
-        <span>•</span>
-        <span>🔄 最終更新：Ver 3.1</span>
+    <header class="text-center mb-16 relative">
+      <div class="inline-block animate-float mb-4">
+        <span class="text-7xl">🎣</span>
       </div>
+      <h1 class="text-5xl md:text-7xl font-black mb-6 tracking-tighter neon-text">
+        フィッシング<br />エボリューション
+      </h1>
+      <p class="text-xl md:text-2xl font-bold text-cyan-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+        釣り上げろ、最強の称号！<br class="md:hidden" />魚を釣って装備を育てる<br />超成長型・釣りアクションRPG！
+      </p>
 
-      <div class="flex flex-wrap gap-2 mb-8">
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ゲーム</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">シミュレーション</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">放置</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">JavaScript</span>
+      <div class="flex justify-center mb-12">
+        <a href="https://mori618.github.io/fishing/" target="_blank" rel="noopener noreferrer"
+           class="game-button relative px-10 py-5 rounded-2xl text-white font-black text-2xl md:text-3xl flex items-center gap-4 group overflow-hidden">
+          <div class="absolute inset-0 bg-white/20 translate-x-[-100%] skew-x-[-15deg] group-hover:animate-[shimmer_1.5s_infinite]"></div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 md:w-10 md:h-10 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          今すぐプレイ！
+        </a>
       </div>
-
-      <!-- メイン画像 -->
-      <div class="rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-blue-400 to-cyan-500 aspect-video flex items-center justify-center">
-        <img src="../images/fishing-thumb.jpg" alt="フィッシング・エボリューションのスクリーンショット"
-             class="w-full object-cover"
-             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-64 flex flex-col items-center justify-center text-white gap-2\'><span class=\'text-6xl\'>🎣</span><span class=\'text-xl font-bold\'>フィッシング・エボリューション</span></div>'" />
+      
+      <div class="relative max-w-3xl mx-auto rounded-3xl overflow-hidden border-4 border-slate-700 shadow-2xl shadow-cyan-900/50 group">
+        <img src="../images/fishing-thumb.jpg" alt="フィッシング・エボリューションのプレイ画面"
+             class="w-full object-cover group-hover:scale-105 transition-transform duration-700"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full aspect-video bg-gradient-to-br from-cyan-600 to-blue-900 flex flex-col items-center justify-center text-white gap-4\'><span class=\'text-8xl\'>🎣</span><span class=\'text-3xl font-black\'>FISHING EVOLUTION</span></div>'" />
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
       </div>
+    </header>
 
-      <!-- 説明 -->
-      <section class="mb-8 space-y-4 text-base leading-relaxed text-gray-700 dark:text-gray-300">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">📖 制作物について</h2>
-        <p>
-          魚を釣り、売り、装備を強化していく<strong>成長型釣りゲーム</strong>です。
-          クリック（タップ）のみの簡単操作で、本格的な釣りアクションとRPG的な成長要素が楽しめます。
-        </p>
-        <p>
-          釣り竿のランクアップ・星強化、スキルスロットへの自由なビルド構築、全35種の魚＋激レアな「ヌシ（称号付き）」の図鑑コンプリートなど、やり込み要素が豊富。
-          漁船による放置プレイや、カジノミニゲームも搭載しています。
-        </p>
-      </section>
-
-      <!-- ゲームサイクル -->
-      <section class="mb-8">
-        <h2 class="text-xl font-bold mb-3">🔄 ゲームサイクル</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-4 text-center border border-gray-100 dark:border-gray-800">
-            <div class="text-2xl mb-1">🎣</div>
-            <div class="text-sm font-semibold">釣り</div>
-            <div class="text-xs text-gray-400 mt-1">魚を釣る</div>
-          </div>
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-4 text-center border border-gray-100 dark:border-gray-800">
-            <div class="text-2xl mb-1">💰</div>
-            <div class="text-sm font-semibold">売却</div>
-            <div class="text-xs text-gray-400 mt-1">Gを稼ぐ</div>
-          </div>
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-4 text-center border border-gray-100 dark:border-gray-800">
-            <div class="text-2xl mb-1">⬆️</div>
-            <div class="text-sm font-semibold">強化</div>
-            <div class="text-xs text-gray-400 mt-1">装備を育てる</div>
-          </div>
-          <div class="bg-white dark:bg-gray-900 rounded-xl p-4 text-center border border-gray-100 dark:border-gray-800">
-            <div class="text-2xl mb-1">🐟</div>
-            <div class="text-sm font-semibold">図鑑</div>
-            <div class="text-xs text-gray-400 mt-1">35種を集める</div>
-          </div>
+    <main class="grid md:grid-cols-2 gap-8 mb-16">
+      <section class="bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-700">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+          <span class="text-3xl">🌊</span> 熱狂のポイント
+        </h2>
+        <div class="space-y-6">
+          <p class="text-lg text-slate-300 font-bold leading-relaxed">
+            最強の釣り人への道を探求せよ！
+          </p>
+          <p class="text-slate-400 leading-relaxed">
+            クリックだけで楽しめる本格アクション！ゲージをタイミングよく止めて大物を釣り上げろ。釣った魚を売ってG(ゴールド)を稼げば、強力な装備が手に入る。
+          </p>
+          <p class="text-slate-400 leading-relaxed">
+            全35種の魚図鑑コンプリート、スキルを組み合わせる自由な「ビルド構築」、放置してても自動で稼げる漁船システムなど、やり込み要素が満載！
+          </p>
         </div>
       </section>
 
-      <!-- 主な機能 -->
-      <section class="mb-8">
-        <h2 class="text-xl font-bold mb-3">✨ 主な機能</h2>
-        <ul class="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>ゲージバトル</strong>：パワーが不足したときはタイミングでカバー！</li>
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>スキルビルド</strong>：竿の星の数だけスロットが解放、自由に組み合わせる</li>
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>スキル合成</strong>：特定の組み合わせで伝説級スキルを作成</li>
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>フィーバーモード</strong>：太陽/月が溜まると強力な特殊タイムが発動</li>
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>漁船（放置）</strong>：出かけてる間も自動で漁獲</li>
-          <li class="flex gap-2"><span class="text-accent">▸</span> <strong>ガチャシステム</strong>：チケットを集めてスキルを引く</li>
-        </ul>
-      </section>
+      <section class="bg-slate-800/50 backdrop-blur-md rounded-3xl p-8 border border-slate-700">
+        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+          <span class="text-3xl">🎮</span> 遊び方
+        </h2>
+        <div class="space-y-6">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-400 flex flex-col justify-center items-center font-black text-xl border border-cyan-500/30 shrink-0">1</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-cyan-200">大物を釣り上げる！</h3>
+              <p class="text-slate-400 text-sm">タイミングをあわせてゲージをストップ！</p>
+            </div>
+          </div>
+          
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-yellow-500/20 text-yellow-500 flex flex-col justify-center items-center font-black text-xl border border-yellow-500/30 shrink-0">2</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-yellow-200">稼いで強化する</h3>
+              <p class="text-slate-400 text-sm">魚を売ったお金で釣り竿をアップグレード！</p>
+            </div>
+          </div>
 
-      <!-- 技術スタック -->
-      <section class="mb-10">
-        <h2 class="text-xl font-bold mb-3">🛠 使用技術</h2>
-        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 text-sm">
-          <li>JavaScript (Vanilla)</li>
-          <li>HTML5 / CSS3</li>
-          <li>localStorage（セーブデータ管理）</li>
-          <li>GitHub Pages（ホスティング）</li>
-        </ul>
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex flex-col justify-center items-center font-black text-xl border border-emerald-500/30 shrink-0">3</div>
+            <div>
+              <h3 class="font-bold text-xl mb-1 text-emerald-200">究極のスキルビルド</h3>
+              <p class="text-slate-400 text-sm">伝説のスキルを合成し、伝説の魚を釣り上げろ！</p>
+            </div>
+          </div>
+        </div>
       </section>
+    </main>
 
-      <!-- アクションボタン -->
-      <div class="flex flex-wrap gap-4 mb-12">
-        <a id="play-fishing-btn" href="https://mori618.github.io/fishing/" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-dark transition-colors shadow-lg shadow-accent/20">
-          🎣 ゲームをプレイ
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
+    <footer class="border-t border-slate-800 pt-8 pb-12 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="text-slate-500 text-sm">
+        <span class="font-bold">開発技術:</span> JavaScript / HTML5 / CSS3
+      </div>
+      
+      <div class="flex gap-4">
         <a href="https://github.com/mori618/fishing" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium hover:border-accent hover:text-accent transition-colors">
-          📦 ソースコード
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold hover:bg-slate-700 hover:text-white transition-colors">
+          <svg viewBox="0 0 24 24" class="w-5 h-5" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          ソースコードを見る
         </a>
       </div>
-    </article>
-
-    <footer class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
-      <p>© <script>document.write(new Date().getFullYear())</script> My Works. All rights reserved.</p>
     </footer>
+
   </div>
 </body>
 </html>
