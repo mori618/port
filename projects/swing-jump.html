@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>スウィングジャンプ | My Works</title>
+  <meta name="description" content="ブランコを使って飛距離を競うチャレンジゲーム。タイミングよく離して最高記録を目指そう！" />
+  <meta property="og:title" content="スウィングジャンプ | My Works" />
+  <meta property="og:description" content="ブランコを使って飛距離を競うチャレンジゲーム。タイミングよく離して最高記録を目指そう！" />
+  <meta property="og:image" content="../images/swing-jump-thumb.jpg" />
+  <meta property="og:type" content="article" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'media',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'] },
+          colors: { accent: { DEFAULT: '#6C63FF', dark: '#5a52d4' } },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+</head>
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-10">
+
+    <!-- 戻るボタン -->
+    <a href="../index.html" id="back-to-list"
+       class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent font-medium mb-8 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+      </svg>
+      一覧に戻る
+    </a>
+
+    <article>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">🎿 スウィングジャンプ</h1>
+
+      <div class="flex flex-wrap items-center gap-3 mb-6 text-sm text-gray-400 dark:text-gray-500">
+        <span>🗓 制作：2024年6月</span>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-8">
+        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ゲーム</span>
+        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">アクション</span>
+        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">カジュアル</span>
+        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">JavaScript</span>
+      </div>
+
+      <!-- メイン画像 -->
+      <div class="rounded-2xl overflow-hidden mb-8 bg-gradient-to-br from-sky-400 to-emerald-400 aspect-video flex items-center justify-center">
+        <img src="../images/swing-jump-thumb.jpg" alt="スウィングジャンプのスクリーンショット"
+             class="w-full object-cover"
+             onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-64 flex flex-col items-center justify-center text-white gap-2\'><span class=\'text-6xl\'>🎿</span><span class=\'text-xl font-bold\'>スウィングジャンプ</span></div>'" />
+      </div>
+
+      <!-- 説明 -->
+      <section class="mb-8 space-y-4 text-base leading-relaxed text-gray-700 dark:text-gray-300">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">📖 制作物について</h2>
+        <p>
+          ブランコを使って飛距離を競う<strong>ブランコ飛距離チャレンジゲーム</strong>です。
+          ブランコが最高点に達した瞬間が飛ぶベストタイミング！タイミングよく手を離して最高記録を更新しましょう。
+        </p>
+        <p>
+          操作はシンプルですが、ブランコの振り子の物理挙動をしっかり意識する必要があります。
+          カジュアルに遊べながらも、高い記録を狙うのに熱中できる一作です。
+        </p>
+      </section>
+
+      <!-- 遊び方 -->
+      <section class="mb-8">
+        <h2 class="text-xl font-bold mb-3">🕹 遊び方</h2>
+        <ol class="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
+          <li class="flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-accent text-white text-xs flex items-center justify-center shrink-0 font-bold">1</span>
+            <span>ブランコが勢いよく揺れるのを待つ</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-accent text-white text-xs flex items-center justify-center shrink-0 font-bold">2</span>
+            <span>最高点に達したタイミングでクリック（タップ）して手を離す</span>
+          </li>
+          <li class="flex gap-3">
+            <span class="w-6 h-6 rounded-full bg-accent text-white text-xs flex items-center justify-center shrink-0 font-bold">3</span>
+            <span>飛距離を記録して最高スコアを目指す！</span>
+          </li>
+        </ol>
+      </section>
+
+      <!-- 技術スタック -->
+      <section class="mb-10">
+        <h2 class="text-xl font-bold mb-3">🛠 使用技術</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 text-sm">
+          <li>JavaScript (Vanilla)</li>
+          <li>HTML5 / CSS3</li>
+          <li>GitHub Pages（ホスティング）</li>
+        </ul>
+      </section>
+
+      <!-- アクションボタン -->
+      <div class="flex flex-wrap gap-4 mb-12">
+        <a id="play-swing-jump-btn" href="https://mori618.github.io/swing-jump/" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-dark transition-colors shadow-lg shadow-accent/20">
+          🎿 ゲームをプレイ
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <a href="https://github.com/mori618/swing-jump" target="_blank" rel="noopener noreferrer"
+           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium hover:border-accent hover:text-accent transition-colors">
+          📦 ソースコード
+        </a>
+      </div>
+    </article>
+
+    <footer class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
+      <p>© <script>document.write(new Date().getFullYear())</script> My Works. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>
