@@ -49,6 +49,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
 
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
   <!-- React + Babel (CDN) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -324,9 +327,9 @@
                 onChange={e => setSortKey(e.target.value)}
                 className="text-sm px-4 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white font-bold focus:outline-none focus:border-accent cursor-pointer appearance-none"
               >
-                <option value="newest">🔥 NEW ARRIVALS</option>
-                <option value="oldest">🕰 CLASSICS</option>
-                <option value="name">🔤 A-Z</option>
+                <option value="newest">NEW ARRIVALS</option>
+                <option value="oldest">CLASSICS</option>
+                <option value="name">A-Z</option>
               </select>
             </div>
           </div>
@@ -341,14 +344,14 @@
 
           {error && (
             <div className="text-center py-32 text-red-400">
-              <p className="text-5xl mb-4">⚠️</p>
+              <span className="material-icons text-6xl mb-4">warning</span>
               <p className="font-bold">{error}</p>
             </div>
           )}
 
           {!loading && !error && filteredProjects.length === 0 && (
             <div className="text-center py-32 text-slate-500">
-              <p className="text-6xl mb-6 opacity-30">🎮</p>
+              <span className="material-icons text-7xl mb-6 opacity-20">sports_esports</span>
               <p className="text-xl font-bold">NO GAMES DISCOVERED</p>
               <p className="text-sm mt-2">フィルター条件を変更してみてください。</p>
             </div>
