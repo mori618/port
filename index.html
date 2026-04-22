@@ -171,7 +171,12 @@
       const [imgError, setImgError] = useState(false);
       return (
         <a
-          href={project.detail_url}
+          href={`#section-${project.id}`}
+          onClick={(e) => {
+            e.preventDefault();
+            const el = document.getElementById(`section-${project.id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
+          }}
           className="project-card block rounded-3xl overflow-hidden animate-fadeIn relative group"
           aria-label={`${project.title}をすぐ遊ぶ`}
         >
@@ -360,7 +365,7 @@
           )}
 
           {!loading && !error && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-32">
               {filteredProjects.map(project => (
                 <ProjectCard
                   key={project.id}
@@ -372,12 +377,44 @@
             </div>
           )}
 
-          {/* ===== フッター ===== */}
-          <footer className="mt-24 pt-8 border-t border-slate-800/60 text-center text-sm font-bold text-slate-500 tracking-wider">
+          {/* ===== スクロールインジケーター ===== */}
+          {!loading && !error && filteredProjects.length > 0 && (
+             <div className="text-center mb-16 animate-bounce">
+                <p className="text-slate-400 font-bold tracking-widest text-sm mb-4">SCROLL TO EXPLORE</p>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+             </div>
+          )}
+
+        </div>
+
+        {/* ===== スタッキングセクション (フルスクリーン) ===== */}
+        {!loading && !error && (
+          <div className="relative w-full">
+            {filteredProjects.map((project, index) => (
+              <div 
+                key={project.id} 
+                id={`section-${project.id}`}
+                className="sticky top-0 w-full h-screen overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5 bg-[#020617]"
+                style={{ zIndex: index + 10 }}
+              >
+                <iframe 
+                  src={project.detail_url} 
+                  className="w-full h-full border-none"
+                  title={project.title}
+                ></iframe>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ===== フッター ===== */}
+        <div className="relative bg-[#020617]" style={{ zIndex: 100 }}>
+          <footer className="pt-8 pb-12 border-t border-slate-800/60 text-center text-sm font-bold text-slate-500 tracking-wider">
             <p>© {new Date().getFullYear()} GAME ARCADE ARCHIVE.</p>
             <p className="mt-1 text-xs font-normal">All systems operational.</p>
           </footer>
-
         </div>
       );
     }
