@@ -151,23 +151,9 @@
       opacity: 0.7;
     }
 
-    /* スクロールバーのカスタマイズ */
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #05050a;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #ff2a55;
-    }
+    /* スクロールバーを非表示 */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
   </style>
 </head>
 

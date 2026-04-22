@@ -58,15 +58,13 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    /* スクロールバーのカスタマイズ */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
-    ::-webkit-scrollbar-thumb:hover { background: #8b5cf6; }
+    /* スクロールバーを非表示 */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
 
     /* ベース背景色 */
     body {
-      background-color: #020617; /* Slate-950 より暗い設定 */
+      background-color: #020617;
       color: #f8fafc;
       background-image: 
         radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 40%),
@@ -137,6 +135,19 @@
     }
     .tag-btn:hover {
       box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* トランジションオーバーレイ */
+    .transition-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    .transition-overlay canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
     }
   </style>
 </head>
@@ -213,6 +224,412 @@
             {shortTitle}
           </span>
         </a>
+      );
+    }
+
+    /* ===== トランジションアニメーション ===== */
+
+    /**
+     * fishing: 波が押し寄せて画面切り替わり
+     */
+    function animateFishing(canvas) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      let t = 0;
+      let done = false;
+
+      function draw() {
+        if (done) return;
+        ctx.clearRect(0, 0, W, H);
+        const progress = Math.min(t / 90, 1);
+        // 海の色グラデーション
+        const grad = ctx.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, `rgba(0,40,80,${1 - progress})`);
+        grad.addColorStop(1, `rgba(0,100,180,${1 - progress})`);
+
+        // 複数の波を描画
+        for (let wi = 0; wi < 4; wi++) {
+          const waveOffset = wi * (H / 4);
+          const speed = 1 + wi * 0.3;
+          const amp = 40 + wi * 15;
+          const waveY = H - waveOffset - progress * H * (1.2 + wi * 0.15);
+          ctx.beginPath();
+          ctx.moveTo(0, H);
+          for (let x = 0; x <= W; x += 5) {
+            const y = waveY + Math.sin((x / W) * Math.PI * 4 + t * speed * 0.1) * amp;
+            ctx.lineTo(x, y);
+          }
+          ctx.lineTo(W, H);
+          ctx.closePath();
+          const r = 10 + wi * 20, g = 80 + wi * 30, b = 160 + wi * 20;
+          ctx.fillStyle = `rgba(${r},${g},${b},${0.85 - wi * 0.15})`;
+          ctx.fill();
+        }
+
+        // 泡のエフェクト
+        if (progress > 0.2) {
+          for (let i = 0; i < 20; i++) {
+            const bx = (Math.sin(i * 137.5 + t * 0.05) * 0.5 + 0.5) * W;
+            const by = H - (progress - 0.2) * H * 1.5 + Math.cos(i * 97.3) * 60 - i * 20;
+            const br = 3 + (i % 5) * 2;
+            ctx.beginPath();
+            ctx.arc(bx, by, br, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(180,220,255,${0.6 * (1 - progress)})`;
+            ctx.fill();
+          }
+        }
+
+        t++;
+        if (progress >= 1) {
+          ctx.clearRect(0, 0, W, H);
+          done = true;
+          return;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    /**
+     * puzzle-rogue: パズルピースが上から落下してくる
+     */
+    function animatePuzzle(canvas) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const COLS = 8, ROWS = 6;
+      const pw = W / COLS, ph = H / ROWS;
+      const colors = ['#7c3aed','#0ea5e9','#10b981','#f59e0b','#ef4444','#ec4899'];
+      // 各ピースのディレイと色をランダムに
+      const pieces = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          pieces.push({
+            x: c * pw, targetY: r * ph,
+            y: -(Math.random() * H * 1.5 + 100),
+            color: colors[Math.floor(Math.random() * colors.length)],
+            delay: (r + c) * 2 + Math.random() * 10,
+            speed: 8 + Math.random() * 6,
+          });
+        }
+      }
+      let t = 0;
+      let done = false;
+
+      function draw() {
+        if (done) return;
+        ctx.clearRect(0, 0, W, H);
+        let allLanded = true;
+        pieces.forEach(p => {
+          if (t < p.delay) { allLanded = false; return; }
+          if (p.y < p.targetY) {
+            p.y = Math.min(p.y + p.speed, p.targetY);
+            allLanded = false;
+          }
+          // ピース本体
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = 0.85;
+          ctx.fillRect(p.x + 2, p.y + 2, pw - 4, ph - 4);
+          // ハイライト
+          ctx.globalAlpha = 0.3;
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(p.x + 4, p.y + 4, pw * 0.4, ph * 0.25);
+          ctx.globalAlpha = 1;
+          // 枠線
+          ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(p.x + 2, p.y + 2, pw - 4, ph - 4);
+        });
+        t++;
+        if (allLanded) {
+          // 全部並んだらフェードアウト
+          let alpha = 1;
+          function fadeOut() {
+            ctx.clearRect(0, 0, W, H);
+            if (alpha <= 0) { done = true; return; }
+            ctx.globalAlpha = alpha;
+            pieces.forEach(p => {
+              ctx.fillStyle = p.color;
+              ctx.fillRect(p.x + 2, p.targetY + 2, pw - 4, ph - 4);
+              ctx.fillStyle = 'rgba(255,255,255,0.3)';
+              ctx.fillRect(p.x + 4, p.targetY + 4, pw * 0.4, ph * 0.25);
+            });
+            ctx.globalAlpha = 1;
+            alpha -= 0.04;
+            requestAnimationFrame(fadeOut);
+          }
+          fadeOut();
+          return;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    /**
+     * swing-jump: ブランコから射出された人物が弧を描いて飛ぶ
+     */
+    function animateSwing(canvas) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      // 背景: 夜空→夕暮れのグラデーション
+      let t = 0;
+      // 人物の発射点と軌道
+      const startX = W * 0.15, startY = H * 0.5;
+      const vx0 = W * 0.012, vy0 = -H * 0.022;
+      const gravity = H * 0.0008;
+      let done = false;
+
+      // 星をランダム生成
+      const stars = Array.from({length: 60}, () => ({
+        x: Math.random() * W, y: Math.random() * H * 0.6,
+        r: Math.random() * 2 + 0.5,
+      }));
+
+      function draw() {
+        if (done) return;
+        ctx.clearRect(0, 0, W, H);
+        const progress = Math.min(t / 120, 1);
+
+        // 背景グラデーション (フェードイン→アウト)
+        const bgAlpha = t < 60 ? t / 60 : 1 - (t - 60) / 60;
+        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
+        bgGrad.addColorStop(0, `rgba(5,10,40,${bgAlpha})`);
+        bgGrad.addColorStop(0.6, `rgba(30,20,80,${bgAlpha})`);
+        bgGrad.addColorStop(1, `rgba(80,20,40,${bgAlpha})`);
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, W, H);
+
+        // 星
+        ctx.globalAlpha = bgAlpha * 0.8;
+        stars.forEach(s => {
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
+          ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+
+        // 軌跡を描画
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(255,200,100,${bgAlpha * 0.5})`;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        for (let i = 0; i <= t; i++) {
+          const px = startX + vx0 * i;
+          const py = startY + vy0 * i + 0.5 * gravity * i * i;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 人物 (シルエット)
+        const px = startX + vx0 * t;
+        const py = startY + vy0 * t + 0.5 * gravity * t * t;
+        const angle = Math.atan2(vy0 + gravity * t, vx0);
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(angle);
+        ctx.globalAlpha = bgAlpha;
+        // 体
+        ctx.fillStyle = '#ffd700';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 10, 16, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // 頭
+        ctx.beginPath();
+        ctx.arc(0, -20, 9, 0, Math.PI * 2);
+        ctx.fill();
+        // 腕
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-10, -4);
+        ctx.lineTo(-22, 8);
+        ctx.moveTo(10, -4);
+        ctx.lineTo(22, 8);
+        ctx.stroke();
+        // 足
+        ctx.beginPath();
+        ctx.moveTo(-5, 14);
+        ctx.lineTo(-12, 28);
+        ctx.moveTo(5, 14);
+        ctx.lineTo(12, 28);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.restore();
+
+        t++;
+        if (t > 130 || py > H + 50) {
+          done = true;
+          ctx.clearRect(0, 0, W, H);
+          return;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    /**
+     * ggdemon: レンガの塔が下から生えてくる
+     */
+    function animateGgdemon(canvas) {
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const BRICK_W = 80, BRICK_H = 30;
+      const COLS = Math.ceil(W / BRICK_W) + 1;
+      // 塔の各列を定義
+      const towers = Array.from({length: COLS}, (_, i) => ({
+        x: i * BRICK_W - BRICK_W / 2,
+        height: 0, // 現在積まれた高さ
+        targetH: H * (0.5 + Math.random() * 0.7),
+        speed: 8 + Math.random() * 12,
+        delay: i * 4,
+        color1: `hsl(${20 + Math.random() * 20},50%,${28 + Math.random() * 12}%)`,
+        color2: `hsl(${20 + Math.random() * 20},50%,${20 + Math.random() * 10}%)`,
+      }));
+      let t = 0;
+      let done = false;
+
+      function draw() {
+        if (done) return;
+        ctx.clearRect(0, 0, W, H);
+
+        let allDone = true;
+        towers.forEach(tower => {
+          if (t < tower.delay) { allDone = false; return; }
+          if (tower.height < tower.targetH) {
+            tower.height = Math.min(tower.height + tower.speed, tower.targetH);
+            allDone = false;
+          }
+          // 塔のレンガを描画 (下から積み上げ)
+          const startY = H - tower.height;
+          const brickRows = Math.ceil(tower.height / BRICK_H);
+          for (let r = 0; r < brickRows; r++) {
+            const by = H - (r + 1) * BRICK_H;
+            const offset = (r % 2) * (BRICK_W / 2);
+            // レンガ
+            ctx.fillStyle = (r % 3 === 0) ? tower.color1 : tower.color2;
+            ctx.fillRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
+            // 目地 (モルタル)
+            ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
+            // ハイライト
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            ctx.fillRect(tower.x + offset + 2, by + 2, BRICK_W - 10, 6);
+          }
+          // 亀裂エフェクト
+          if (tower.height > 80) {
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(tower.x + BRICK_W * 0.3, H - 20);
+            ctx.lineTo(tower.x + BRICK_W * 0.45, H - 60);
+            ctx.lineTo(tower.x + BRICK_W * 0.35, H - 100);
+            ctx.stroke();
+          }
+        });
+
+        t++;
+        if (allDone) {
+          // フェードアウト
+          let alpha = 1;
+          function fadeOut() {
+            ctx.clearRect(0, 0, W, H);
+            if (alpha <= 0) { done = true; return; }
+            ctx.globalAlpha = alpha;
+            towers.forEach(tower => {
+              const brickRows = Math.ceil(tower.targetH / BRICK_H);
+              for (let r = 0; r < brickRows; r++) {
+                const by = H - (r + 1) * BRICK_H;
+                const offset = (r % 2) * (BRICK_W / 2);
+                ctx.fillStyle = (r % 3 === 0) ? tower.color1 : tower.color2;
+                ctx.fillRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
+              }
+            });
+            ctx.globalAlpha = 1;
+            alpha -= 0.03;
+            requestAnimationFrame(fadeOut);
+          }
+          fadeOut();
+          return;
+        }
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+
+    /* アニメーション関数マップ */
+    const ANIM_MAP = {
+      'fishing': animateFishing,
+      'puzzle-rogue': animatePuzzle,
+      'swing-jump': animateSwing,
+      'ggdemon': animateGgdemon,
+    };
+
+    /* ===== スティッキーセクション (トランジション付き) ===== */
+    function StickySection({ project, index }) {
+      const sectionRef = React.useRef(null);
+      const canvasRef = React.useRef(null);
+      const animatedRef = React.useRef(false);
+
+      useEffect(() => {
+        const section = sectionRef.current;
+        const canvas = canvasRef.current;
+        if (!section || !canvas) return;
+
+        // Canvasサイズをセクションに合わせる
+        const resize = () => {
+          canvas.width = section.offsetWidth;
+          canvas.height = section.offsetHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        // IntersectionObserverでセクションの表示を検知
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting && !animatedRef.current) {
+                animatedRef.current = true;
+                const animFn = ANIM_MAP[project.id];
+                if (animFn) animFn(canvas);
+              }
+              // 画面外に出たらリセット（再スクロール時に再生）
+              if (!entry.isIntersecting) {
+                animatedRef.current = false;
+              }
+            });
+          },
+          { threshold: 0.15 }
+        );
+        observer.observe(section);
+
+        return () => {
+          observer.disconnect();
+          window.removeEventListener('resize', resize);
+        };
+      }, [project.id]);
+
+      return (
+        <div
+          ref={sectionRef}
+          id={`section-${project.id}`}
+          className="sticky top-0 w-full h-screen overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5 bg-[#020617]"
+          style={{ zIndex: index + 10 }}
+        >
+          <iframe
+            src={project.detail_url}
+            className="w-full h-full border-none"
+            title={project.title}
+          />
+          {/* トランジションオーバーレイ */}
+          <div className="transition-overlay">
+            <canvas ref={canvasRef} />
+          </div>
+        </div>
       );
     }
 
@@ -384,18 +801,7 @@
         {!loading && !error && (
           <div className="relative w-full">
             {filteredProjects.map((project, index) => (
-              <div 
-                key={project.id} 
-                id={`section-${project.id}`}
-                className="sticky top-0 w-full h-screen overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5 bg-[#020617]"
-                style={{ zIndex: index + 10 }}
-              >
-                <iframe 
-                  src={project.detail_url} 
-                  className="w-full h-full border-none"
-                  title={project.title}
-                ></iframe>
-              </div>
+              <StickySection key={project.id} project={project} index={index} />
             ))}
           </div>
         )}
