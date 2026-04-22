@@ -260,7 +260,8 @@
       }, [projects, selectedTags, sortKey]);
 
       return (
-        <div className="max-w-6xl mx-auto px-4 py-16">
+        <>
+          <div className="max-w-6xl mx-auto px-4 py-16">
 
           {/* ===== ヘッダー ===== */}
           <header className="mb-16 text-center">
@@ -403,7 +404,8 @@
             <p className="mt-1 text-xs font-normal">All systems operational.</p>
           </footer>
         </div>
-      );
+      </>
+    );
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
