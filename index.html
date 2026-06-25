@@ -31,13 +31,19 @@
               '0%': { opacity: '0', transform: 'translateY(12px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
-            shimmer: {
-              '0%': { transform: 'translateX(-100%) skewX(-15deg)' },
-              '100%': { transform: 'translateX(200%) skewX(-15deg)' }
-            }
+            fadeInScale: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(40px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
           },
           animation: {
             fadeIn: 'fadeIn 0.4s ease both',
+            fadeInScale: 'fadeInScale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+            slideUp: 'slideUp 0.5s ease both',
           },
         },
       },
@@ -63,34 +69,67 @@
     * { scrollbar-width: none; -ms-overflow-style: none; }
 
     /* ベース背景色 */
-    body {
+    html, body {
       background-color: #020617;
       color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 背景グラデーション（固定） */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
       background-image: 
-        radial-gradient(circle at top right, rgba(139, 92, 246, 0.15), transparent 40%),
-        radial-gradient(circle at bottom left, rgba(14, 165, 233, 0.1), transparent 40%);
-      background-attachment: fixed;
+        radial-gradient(circle at 80% 10%, rgba(139, 92, 246, 0.18), transparent 45%),
+        radial-gradient(circle at 10% 80%, rgba(14, 165, 233, 0.12), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* ネオンテキスト */
     .neon-title {
-      background: linear-gradient(to right, #c084fc, #38bdf8);
+      background: linear-gradient(135deg, #c084fc 0%, #818cf8 50%, #38bdf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
     }
 
     /* カードホバーエフェクト */
-    .project-card {
+    .game-card {
       transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
-    .project-card:hover {
-      transform: translateY(-8px);
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .game-card:hover::before {
+      opacity: 1;
+    }
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.01);
       border-color: rgba(139, 92, 246, 0.5);
-      box-shadow: 0 20px 40px -10px rgba(139, 92, 246, 0.3), 0 0 15px rgba(139, 92, 246, 0.1);
+      box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(139, 92, 246, 0.2),
+        0 0 30px rgba(139, 92, 246, 0.15);
+    }
+    .game-card:active {
+      transform: translateY(-2px) scale(0.99);
     }
 
     /* サムネイル画像のズームエフェクト */
@@ -102,18 +141,20 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(to top, rgba(15,23,42,1), transparent);
-      opacity: 0.5;
+      background: linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 50%, transparent 100%);
     }
     .thumb-wrap img {
       transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    .project-card:hover .thumb-wrap img {
-      transform: scale(1.1);
+    .game-card:hover .thumb-wrap img {
+      transform: scale(1.08);
     }
 
-    /* プレイボタンのエフェクト */
-    .play-btn-overlay {
+    /* プレイボタンのオーバーレイ */
+    .play-overlay {
       position: absolute;
       inset: 0;
       display: flex;
@@ -122,8 +163,10 @@
       opacity: 0;
       transition: opacity 0.3s ease;
       z-index: 10;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(2px);
     }
-    .project-card:hover .play-btn-overlay {
+    .game-card:hover .play-overlay {
       opacity: 1;
     }
 
@@ -136,29 +179,99 @@
     .tag-btn:hover {
       box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
     }
+    .tag-btn.active {
+      background: rgba(139, 92, 246, 0.9);
+      border-color: rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    }
 
-    /* トランジションオーバーレイ */
-    .transition-overlay {
+    /* モーダルオーバーレイ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* モーダルヘッダー */
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    /* iframeコンテナ */
+    .modal-iframe-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-iframe-wrap iframe {
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .transition-overlay canvas {
       width: 100%;
       height: 100%;
-      display: block;
+      border: none;
+    }
+
+    /* タグバッジ */
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #c084fc;
+    }
+
+    /* カードのアニメーション遅延 */
+    .card-delay-0 { animation-delay: 0ms; }
+    .card-delay-1 { animation-delay: 60ms; }
+    .card-delay-2 { animation-delay: 120ms; }
+    .card-delay-3 { animation-delay: 180ms; }
+    .card-delay-4 { animation-delay: 240ms; }
+    .card-delay-5 { animation-delay: 300ms; }
+
+    /* コンテンツラッパー */
+    #root {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    /* グリッドレイアウトのグロー効果 */
+    .grid-glow {
+      background: radial-gradient(circle at center, rgba(139, 92, 246, 0.03), transparent 70%);
+    }
+
+    /* スタッツバー */
+    .stats-bar {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
-<body class="font-sans min-h-screen">
+<body class="font-sans">
 
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+    const { useState, useEffect, useMemo, useCallback } = React;
 
-    /* ===== ユーティリティ ===== */
+    /* ===== プレースホルダーサムネイル ===== */
     function PlaceholderThumb({ title }) {
       const colors = [
         ['#8b5cf6', '#c084fc'],
@@ -172,7 +285,7 @@
       const [c1, c2] = colors[idx];
       return (
         <div
-          className="w-full h-56 flex items-center justify-center text-white text-5xl font-black select-none"
+          className="w-full h-full flex items-center justify-center text-white text-6xl font-black select-none"
           style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
         >
           {title.charAt(0)}
@@ -180,454 +293,135 @@
       );
     }
 
-    /* ===== プロジェクトアイコン ===== */
-    function ProjectIcon({ project }) {
+    /* ===== ゲームカード ===== */
+    function GameCard({ project, index, onOpen }) {
       const [imgError, setImgError] = useState(false);
-      const shortTitle = project.title.length > 11 ? project.title.substring(0, 10) + '…' : project.title;
 
       return (
-        <a
-          href={`#section-${project.id}`}
-          onClick={(e) => {
-            e.preventDefault();
-            const el = document.getElementById(`section-${project.id}`);
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-          className="flex flex-col items-center gap-3 group animate-fadeIn w-20 md:w-28"
-          aria-label={`${project.title}をすぐ遊ぶ`}
+        <div
+          className={`game-card rounded-2xl animate-fadeIn card-delay-${Math.min(index, 5)}`}
+          onClick={() => onOpen(project)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
+          aria-label={`${project.title} をプレイ`}
         >
-          <div className="w-20 h-20 md:w-28 md:h-28 relative rounded-[1.25rem] md:rounded-[1.75rem] overflow-hidden shadow-[0_10px_20px_rgba(0,0,0,0.5)] border border-slate-700/50 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_15px_30px_rgba(139,92,246,0.4)] group-hover:border-accent group-active:scale-95 bg-slate-800">
+          {/* サムネイル */}
+          <div className="thumb-wrap h-44 rounded-t-2xl">
             {imgError ? (
               <PlaceholderThumb title={project.title} />
             ) : (
               <img
                 src={project.thumbnail}
-                alt={`${project.title}のアイコン`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                alt={`${project.title}のサムネイル`}
                 onError={() => setImgError(true)}
                 loading="lazy"
               />
             )}
-            
-            {/* ホバー時のオーバーレイとプレイアイコン */}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-[2px]">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white drop-shadow-md" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
+            {/* プレイオーバーレイ */}
+            <div className="play-overlay rounded-t-2xl">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-full bg-accent/90 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.8)] backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-white text-xs font-black tracking-widest">PLAY NOW</span>
+              </div>
             </div>
-            
-            {/* ガラス状のハイライト効果（iOS風） */}
-            <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent opacity-50 rounded-t-[1.25rem] md:rounded-t-[1.75rem] pointer-events-none"></div>
           </div>
-          
-          <span className="text-xs md:text-sm font-bold text-slate-300 group-hover:text-white transition-colors text-center w-full truncate px-1 tracking-wide">
-            {shortTitle}
-          </span>
-        </a>
+
+          {/* カード本文 */}
+          <div className="p-4">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h2 className="text-white font-black text-base leading-tight">{project.title}</h2>
+              <span className="shrink-0 w-6 h-6 rounded-full bg-green-400/15 border border-green-400/40 flex items-center justify-center" title="プレイ可能">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              </span>
+            </div>
+
+            <p className="text-slate-400 text-xs leading-relaxed mb-3 line-clamp-2">
+              {project.description_short}
+            </p>
+
+            {/* タグ */}
+            <div className="flex flex-wrap gap-1.5">
+              {project.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="tag-badge">{tag}</span>
+              ))}
+              {project.tags.length > 3 && (
+                <span className="tag-badge opacity-60">+{project.tags.length - 3}</span>
+              )}
+            </div>
+          </div>
+        </div>
       );
     }
 
-    /* ===== トランジションアニメーション ===== */
-
-    /**
-     * fishing: 波が押し寄せて画面切り替わり
-     */
-    function animateFishing(canvas) {
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width, H = canvas.height;
-      let t = 0;
-      let done = false;
-
-      function draw() {
-        if (done) return;
-        ctx.clearRect(0, 0, W, H);
-        const progress = Math.min(t / 90, 1);
-        // 海の色グラデーション
-        const grad = ctx.createLinearGradient(0, 0, 0, H);
-        grad.addColorStop(0, `rgba(0,40,80,${1 - progress})`);
-        grad.addColorStop(1, `rgba(0,100,180,${1 - progress})`);
-
-        // 複数の波を描画
-        for (let wi = 0; wi < 4; wi++) {
-          const waveOffset = wi * (H / 4);
-          const speed = 1 + wi * 0.3;
-          const amp = 40 + wi * 15;
-          const waveY = H - waveOffset - progress * H * (1.2 + wi * 0.15);
-          ctx.beginPath();
-          ctx.moveTo(0, H);
-          for (let x = 0; x <= W; x += 5) {
-            const y = waveY + Math.sin((x / W) * Math.PI * 4 + t * speed * 0.1) * amp;
-            ctx.lineTo(x, y);
-          }
-          ctx.lineTo(W, H);
-          ctx.closePath();
-          const r = 10 + wi * 20, g = 80 + wi * 30, b = 160 + wi * 20;
-          ctx.fillStyle = `rgba(${r},${g},${b},${0.85 - wi * 0.15})`;
-          ctx.fill();
-        }
-
-        // 泡のエフェクト
-        if (progress > 0.2) {
-          for (let i = 0; i < 20; i++) {
-            const bx = (Math.sin(i * 137.5 + t * 0.05) * 0.5 + 0.5) * W;
-            const by = H - (progress - 0.2) * H * 1.5 + Math.cos(i * 97.3) * 60 - i * 20;
-            const br = 3 + (i % 5) * 2;
-            ctx.beginPath();
-            ctx.arc(bx, by, br, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(180,220,255,${0.6 * (1 - progress)})`;
-            ctx.fill();
-          }
-        }
-
-        t++;
-        if (progress >= 1) {
-          ctx.clearRect(0, 0, W, H);
-          done = true;
-          return;
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    }
-
-    /**
-     * puzzle-rogue: パズルピースが上から落下してくる
-     */
-    function animatePuzzle(canvas) {
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width, H = canvas.height;
-      const COLS = 8, ROWS = 6;
-      const pw = W / COLS, ph = H / ROWS;
-      const colors = ['#7c3aed','#0ea5e9','#10b981','#f59e0b','#ef4444','#ec4899'];
-      // 各ピースのディレイと色をランダムに
-      const pieces = [];
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          pieces.push({
-            x: c * pw, targetY: r * ph,
-            y: -(Math.random() * H * 1.5 + 100),
-            color: colors[Math.floor(Math.random() * colors.length)],
-            delay: (r + c) * 2 + Math.random() * 10,
-            speed: 8 + Math.random() * 6,
-          });
-        }
-      }
-      let t = 0;
-      let done = false;
-
-      function draw() {
-        if (done) return;
-        ctx.clearRect(0, 0, W, H);
-        let allLanded = true;
-        pieces.forEach(p => {
-          if (t < p.delay) { allLanded = false; return; }
-          if (p.y < p.targetY) {
-            p.y = Math.min(p.y + p.speed, p.targetY);
-            allLanded = false;
-          }
-          // ピース本体
-          ctx.fillStyle = p.color;
-          ctx.globalAlpha = 0.85;
-          ctx.fillRect(p.x + 2, p.y + 2, pw - 4, ph - 4);
-          // ハイライト
-          ctx.globalAlpha = 0.3;
-          ctx.fillStyle = '#fff';
-          ctx.fillRect(p.x + 4, p.y + 4, pw * 0.4, ph * 0.25);
-          ctx.globalAlpha = 1;
-          // 枠線
-          ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(p.x + 2, p.y + 2, pw - 4, ph - 4);
-        });
-        t++;
-        if (allLanded) {
-          // 全部並んだらフェードアウト
-          let alpha = 1;
-          function fadeOut() {
-            ctx.clearRect(0, 0, W, H);
-            if (alpha <= 0) { done = true; return; }
-            ctx.globalAlpha = alpha;
-            pieces.forEach(p => {
-              ctx.fillStyle = p.color;
-              ctx.fillRect(p.x + 2, p.targetY + 2, pw - 4, ph - 4);
-              ctx.fillStyle = 'rgba(255,255,255,0.3)';
-              ctx.fillRect(p.x + 4, p.targetY + 4, pw * 0.4, ph * 0.25);
-            });
-            ctx.globalAlpha = 1;
-            alpha -= 0.04;
-            requestAnimationFrame(fadeOut);
-          }
-          fadeOut();
-          return;
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    }
-
-    /**
-     * swing-jump: ブランコから射出された人物が弧を描いて飛ぶ
-     */
-    function animateSwing(canvas) {
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width, H = canvas.height;
-      // 背景: 夜空→夕暮れのグラデーション
-      let t = 0;
-      // 人物の発射点と軌道
-      const startX = W * 0.15, startY = H * 0.5;
-      const vx0 = W * 0.012, vy0 = -H * 0.022;
-      const gravity = H * 0.0008;
-      let done = false;
-
-      // 星をランダム生成
-      const stars = Array.from({length: 60}, () => ({
-        x: Math.random() * W, y: Math.random() * H * 0.6,
-        r: Math.random() * 2 + 0.5,
-      }));
-
-      function draw() {
-        if (done) return;
-        ctx.clearRect(0, 0, W, H);
-        const progress = Math.min(t / 120, 1);
-
-        // 背景グラデーション (フェードイン→アウト)
-        const bgAlpha = t < 60 ? t / 60 : 1 - (t - 60) / 60;
-        const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-        bgGrad.addColorStop(0, `rgba(5,10,40,${bgAlpha})`);
-        bgGrad.addColorStop(0.6, `rgba(30,20,80,${bgAlpha})`);
-        bgGrad.addColorStop(1, `rgba(80,20,40,${bgAlpha})`);
-        ctx.fillStyle = bgGrad;
-        ctx.fillRect(0, 0, W, H);
-
-        // 星
-        ctx.globalAlpha = bgAlpha * 0.8;
-        stars.forEach(s => {
-          ctx.beginPath();
-          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-          ctx.fillStyle = '#fff';
-          ctx.fill();
-        });
-        ctx.globalAlpha = 1;
-
-        // 軌跡を描画
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(255,200,100,${bgAlpha * 0.5})`;
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 6]);
-        for (let i = 0; i <= t; i++) {
-          const px = startX + vx0 * i;
-          const py = startY + vy0 * i + 0.5 * gravity * i * i;
-          if (i === 0) ctx.moveTo(px, py);
-          else ctx.lineTo(px, py);
-        }
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        // 人物 (シルエット)
-        const px = startX + vx0 * t;
-        const py = startY + vy0 * t + 0.5 * gravity * t * t;
-        const angle = Math.atan2(vy0 + gravity * t, vx0);
-        ctx.save();
-        ctx.translate(px, py);
-        ctx.rotate(angle);
-        ctx.globalAlpha = bgAlpha;
-        // 体
-        ctx.fillStyle = '#ffd700';
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 10, 16, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // 頭
-        ctx.beginPath();
-        ctx.arc(0, -20, 9, 0, Math.PI * 2);
-        ctx.fill();
-        // 腕
-        ctx.strokeStyle = '#ffd700';
-        ctx.lineWidth = 4;
-        ctx.lineCap = 'round';
-        ctx.beginPath();
-        ctx.moveTo(-10, -4);
-        ctx.lineTo(-22, 8);
-        ctx.moveTo(10, -4);
-        ctx.lineTo(22, 8);
-        ctx.stroke();
-        // 足
-        ctx.beginPath();
-        ctx.moveTo(-5, 14);
-        ctx.lineTo(-12, 28);
-        ctx.moveTo(5, 14);
-        ctx.lineTo(12, 28);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
-        ctx.restore();
-
-        t++;
-        if (t > 130 || py > H + 50) {
-          done = true;
-          ctx.clearRect(0, 0, W, H);
-          return;
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    }
-
-    /**
-     * ggdemon: レンガの塔が下から生えてくる
-     */
-    function animateGgdemon(canvas) {
-      const ctx = canvas.getContext('2d');
-      const W = canvas.width, H = canvas.height;
-      const BRICK_W = 80, BRICK_H = 30;
-      const COLS = Math.ceil(W / BRICK_W) + 1;
-      // 塔の各列を定義
-      const towers = Array.from({length: COLS}, (_, i) => ({
-        x: i * BRICK_W - BRICK_W / 2,
-        height: 0, // 現在積まれた高さ
-        targetH: H * (0.5 + Math.random() * 0.7),
-        speed: 8 + Math.random() * 12,
-        delay: i * 4,
-        color1: `hsl(${20 + Math.random() * 20},50%,${28 + Math.random() * 12}%)`,
-        color2: `hsl(${20 + Math.random() * 20},50%,${20 + Math.random() * 10}%)`,
-      }));
-      let t = 0;
-      let done = false;
-
-      function draw() {
-        if (done) return;
-        ctx.clearRect(0, 0, W, H);
-
-        let allDone = true;
-        towers.forEach(tower => {
-          if (t < tower.delay) { allDone = false; return; }
-          if (tower.height < tower.targetH) {
-            tower.height = Math.min(tower.height + tower.speed, tower.targetH);
-            allDone = false;
-          }
-          // 塔のレンガを描画 (下から積み上げ)
-          const startY = H - tower.height;
-          const brickRows = Math.ceil(tower.height / BRICK_H);
-          for (let r = 0; r < brickRows; r++) {
-            const by = H - (r + 1) * BRICK_H;
-            const offset = (r % 2) * (BRICK_W / 2);
-            // レンガ
-            ctx.fillStyle = (r % 3 === 0) ? tower.color1 : tower.color2;
-            ctx.fillRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
-            // 目地 (モルタル)
-            ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
-            // ハイライト
-            ctx.fillStyle = 'rgba(255,255,255,0.08)';
-            ctx.fillRect(tower.x + offset + 2, by + 2, BRICK_W - 10, 6);
-          }
-          // 亀裂エフェクト
-          if (tower.height > 80) {
-            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(tower.x + BRICK_W * 0.3, H - 20);
-            ctx.lineTo(tower.x + BRICK_W * 0.45, H - 60);
-            ctx.lineTo(tower.x + BRICK_W * 0.35, H - 100);
-            ctx.stroke();
-          }
-        });
-
-        t++;
-        if (allDone) {
-          // フェードアウト
-          let alpha = 1;
-          function fadeOut() {
-            ctx.clearRect(0, 0, W, H);
-            if (alpha <= 0) { done = true; return; }
-            ctx.globalAlpha = alpha;
-            towers.forEach(tower => {
-              const brickRows = Math.ceil(tower.targetH / BRICK_H);
-              for (let r = 0; r < brickRows; r++) {
-                const by = H - (r + 1) * BRICK_H;
-                const offset = (r % 2) * (BRICK_W / 2);
-                ctx.fillStyle = (r % 3 === 0) ? tower.color1 : tower.color2;
-                ctx.fillRect(tower.x + offset, by, BRICK_W - 3, BRICK_H - 3);
-              }
-            });
-            ctx.globalAlpha = 1;
-            alpha -= 0.03;
-            requestAnimationFrame(fadeOut);
-          }
-          fadeOut();
-          return;
-        }
-        requestAnimationFrame(draw);
-      }
-      draw();
-    }
-
-    /* アニメーション関数マップ */
-    const ANIM_MAP = {
-      'fishing': animateFishing,
-      'puzzle-rogue': animatePuzzle,
-      'swing-jump': animateSwing,
-      'ggdemon': animateGgdemon,
-    };
-
-    /* ===== スティッキーセクション (トランジション付き) ===== */
-    function StickySection({ project, index }) {
-      const sectionRef = React.useRef(null);
-      const canvasRef = React.useRef(null);
-      const animatedRef = React.useRef(false);
-
+    /* ===== ゲームモーダル ===== */
+    function GameModal({ project, onClose }) {
+      // ESCキーで閉じる
       useEffect(() => {
-        const section = sectionRef.current;
-        const canvas = canvasRef.current;
-        if (!section || !canvas) return;
-
-        // Canvasサイズをセクションに合わせる
-        const resize = () => {
-          canvas.width = section.offsetWidth;
-          canvas.height = section.offsetHeight;
-        };
-        resize();
-        window.addEventListener('resize', resize);
-
-        // IntersectionObserverでセクションの表示を検知
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach(entry => {
-              if (entry.isIntersecting && !animatedRef.current) {
-                animatedRef.current = true;
-                const animFn = ANIM_MAP[project.id];
-                if (animFn) animFn(canvas);
-              }
-              // 画面外に出たらリセット（再スクロール時に再生）
-              if (!entry.isIntersecting) {
-                animatedRef.current = false;
-              }
-            });
-          },
-          { threshold: 0.15 }
-        );
-        observer.observe(section);
-
+        const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handleKey);
+        // スクロールを止める
+        document.body.style.overflow = 'hidden';
         return () => {
-          observer.disconnect();
-          window.removeEventListener('resize', resize);
+          window.removeEventListener('keydown', handleKey);
+          document.body.style.overflow = '';
         };
-      }, [project.id]);
+      }, [onClose]);
+
+      if (!project) return null;
 
       return (
-        <div
-          ref={sectionRef}
-          id={`section-${project.id}`}
-          className="sticky top-0 w-full h-screen overflow-hidden shadow-[0_-20px_50px_rgba(0,0,0,0.8)] border-t border-white/5 bg-[#020617]"
-          style={{ zIndex: index + 10 }}
-        >
-          <iframe
-            src={project.detail_url}
-            className="w-full h-full border-none"
-            title={project.title}
-          />
-          {/* トランジションオーバーレイ */}
-          <div className="transition-overlay">
-            <canvas ref={canvasRef} />
+        <div className="modal-overlay animate-fadeInScale" role="dialog" aria-modal="true" aria-label={`${project.title}ゲームウィンドウ`}>
+          {/* ヘッダー */}
+          <div className="modal-header">
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-red-500/80 transition-all duration-200 text-white shrink-0 border border-white/10"
+              aria-label="閉じる"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* タイトル */}
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-black text-sm truncate">{project.title}</p>
+              <p className="text-slate-500 text-xs truncate">{project.detail_url}</p>
+            </div>
+
+            {/* タグ（デスクトップのみ） */}
+            <div className="hidden md:flex gap-1.5 shrink-0">
+              {project.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="tag-badge">{tag}</span>
+              ))}
+            </div>
+
+            {/* 別タブで開くボタン */}
+            <a
+              href={project.detail_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-accent/80 transition-all duration-200 text-white shrink-0 border border-white/10"
+              title="別タブで開く"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+
+          {/* iframeエリア */}
+          <div className="modal-iframe-wrap">
+            <iframe
+              src={project.detail_url}
+              title={project.title}
+              allow="fullscreen"
+            />
           </div>
         </div>
       );
@@ -640,6 +434,7 @@
       const [error, setError] = useState(null);
       const [selectedTags, setSelectedTags] = useState([]);
       const [sortKey, setSortKey] = useState('newest');
+      const [activeProject, setActiveProject] = useState(null);
 
       useEffect(() => {
         fetch('./projects.json')
@@ -657,11 +452,11 @@
         return [...set];
       }, [projects]);
 
-      const toggleTag = tag => {
+      const toggleTag = useCallback(tag => {
         setSelectedTags(prev =>
           prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
         );
-      };
+      }, []);
 
       const filteredProjects = useMemo(() => {
         let result = projects;
@@ -683,138 +478,133 @@
         <>
           <div className="max-w-6xl mx-auto px-4 py-16">
 
-          {/* ===== ヘッダー ===== */}
-          <header className="mb-16 text-center">
-            <div className="inline-flex items-center gap-2 mb-4 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
-              <span className="w-3 h-3 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
-              <span className="text-xs font-bold tracking-widest text-slate-300">FREE TO PLAY ARCHIVE</span>
-            </div>
-            <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-6 neon-title italic pr-4">
-              GAME ARCADE
-            </h1>
-            <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium">
-              ブラウザですぐに遊べるオリジナルゲーム大集合。<br className="hidden md:inline" />
-              最高の体験が、クリックひとつで待っている！
-            </p>
-          </header>
-
-          {/* ===== コントロールパネル ===== */}
-          <div className="mb-10 p-6 rounded-3xl bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-            {/* タグフィルター */}
-            <div className="flex-1">
-              <p className="text-xs font-bold text-accent-neon mb-3 tracking-wider flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                ジャンル絞り込み
+            {/* ===== ヘッダー ===== */}
+            <header className="mb-14 text-center animate-slideUp">
+              <div className="inline-flex items-center gap-2 mb-5 bg-slate-800/60 px-4 py-1.5 rounded-full border border-slate-700/80">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                <span className="text-xs font-black tracking-[0.2em] text-slate-300">FREE TO PLAY ARCHIVE</span>
+              </div>
+              <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-5 neon-title italic">
+                GAME ARCADE
+              </h1>
+              <p className="text-slate-400 text-base md:text-lg max-w-xl mx-auto leading-relaxed font-medium">
+                ブラウザですぐに遊べるオリジナルゲーム大集合。<br className="hidden md:inline" />
+                カードをクリックして、今すぐプレイ！
               </p>
-              <div className="flex flex-wrap gap-2">
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    onClick={() => toggleTag(tag)}
-                    className={`tag-btn text-sm px-4 py-2 rounded-xl font-bold
-                      ${selectedTags.includes(tag)
-                        ? 'bg-accent border-accent text-white shadow-[0_0_15px_rgba(139,92,246,0.4)]'
-                        : 'text-slate-300'
+            </header>
+
+            {/* ===== コントロールパネル ===== */}
+            <div className="mb-10 p-5 rounded-2xl stats-bar flex flex-col md:flex-row gap-5 justify-between items-start md:items-center">
+              {/* タグフィルター */}
+              <div className="flex-1">
+                <p className="text-xs font-black text-accent-neon mb-3 tracking-widest flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
+                  ジャンルで絞り込む
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {allTags.map(tag => (
+                    <button
+                      key={tag}
+                      id={`tag-${tag}`}
+                      onClick={() => toggleTag(tag)}
+                      className={`tag-btn text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+                        selectedTags.includes(tag)
+                          ? 'active text-white'
+                          : 'text-slate-300 hover:text-white'
                       }`}
-                  >
-                    {tag}
-                  </button>
-                ))}
-                {selectedTags.length > 0 && (
-                  <button
-                    onClick={() => setSelectedTags([])}
-                    className="text-sm px-4 py-2 rounded-xl border border-dashed border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors font-bold"
-                  >
-                    ✕ CLEAR
-                  </button>
-                )}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  {selectedTags.length > 0 && (
+                    <button
+                      id="clear-tags"
+                      onClick={() => setSelectedTags([])}
+                      className="text-xs px-3.5 py-1.5 rounded-xl border border-dashed border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors font-bold"
+                    >
+                      ✕ クリア
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ソートと件数 */}
+              <div className="flex items-center gap-3 shrink-0">
+                <p className="text-sm text-slate-400 font-medium">
+                  <span className="text-xl text-white font-black">{filteredProjects.length}</span>
+                  <span className="ml-1 text-xs">件</span>
+                </p>
+                <select
+                  id="sort-select"
+                  value={sortKey}
+                  onChange={e => setSortKey(e.target.value)}
+                  className="text-xs px-3 py-2 rounded-xl border border-slate-600 bg-slate-800/80 text-white font-bold focus:outline-none focus:border-accent cursor-pointer"
+                >
+                  <option value="newest">新着順</option>
+                  <option value="oldest">古い順</option>
+                  <option value="name">名前順</option>
+                </select>
               </div>
             </div>
 
-            {/* ソートと件数表示 */}
-            <div className="flex flex-col items-end gap-2 shrink-0">
-              <p className="text-sm text-slate-400 font-medium">
-                <span className="text-2xl text-white font-black">{filteredProjects.length}</span>
-                <span className="ml-1 text-xs">GAMES FOUND</span>
-              </p>
-              <select
-                value={sortKey}
-                onChange={e => setSortKey(e.target.value)}
-                className="text-sm px-4 py-2 rounded-xl border border-slate-600 bg-slate-800 text-white font-bold focus:outline-none focus:border-accent cursor-pointer appearance-none"
-              >
-                <option value="newest">NEW ARRIVALS</option>
-                <option value="oldest">CLASSICS</option>
-                <option value="name">A-Z</option>
-              </select>
-            </div>
+            {/* ===== ローディング ===== */}
+            {loading && (
+              <div className="text-center py-32 text-accent">
+                <div className="inline-block w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="font-black tracking-widest text-sm animate-pulse">LOADING...</p>
+              </div>
+            )}
+
+            {/* ===== エラー ===== */}
+            {error && (
+              <div className="text-center py-32 text-red-400">
+                <span className="material-icons text-6xl mb-4 block">warning</span>
+                <p className="font-bold">{error}</p>
+              </div>
+            )}
+
+            {/* ===== ゲームが見つからない ===== */}
+            {!loading && !error && filteredProjects.length === 0 && (
+              <div className="text-center py-32 text-slate-500">
+                <span className="material-icons text-7xl mb-6 opacity-20 block">sports_esports</span>
+                <p className="text-xl font-bold">該当するゲームがありません</p>
+                <p className="text-sm mt-2">フィルター条件を変更してみてください。</p>
+              </div>
+            )}
+
+            {/* ===== ゲームカードグリッド ===== */}
+            {!loading && !error && filteredProjects.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredProjects.map((project, index) => (
+                  <GameCard
+                    key={project.id}
+                    project={project}
+                    index={index}
+                    onOpen={setActiveProject}
+                  />
+                ))}
+              </div>
+            )}
+
           </div>
 
-          {/* ===== プロジェクト一覧 ===== */}
-          {loading && (
-            <div className="text-center py-32 text-accent">
-              <div className="inline-block w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p className="font-bold tracking-widest animate-pulse">LOADING...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-center py-32 text-red-400">
-              <span className="material-icons text-6xl mb-4">warning</span>
-              <p className="font-bold">{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && filteredProjects.length === 0 && (
-            <div className="text-center py-32 text-slate-500">
-              <span className="material-icons text-7xl mb-6 opacity-20">sports_esports</span>
-              <p className="text-xl font-bold">NO GAMES DISCOVERED</p>
-              <p className="text-sm mt-2">フィルター条件を変更してみてください。</p>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-32 max-w-4xl mx-auto">
-              {filteredProjects.map(project => (
-                <ProjectIcon
-                  key={project.id}
-                  project={project}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* ===== スクロールインジケーター ===== */}
-          {!loading && !error && filteredProjects.length > 0 && (
-             <div className="text-center mb-16 animate-bounce">
-                <p className="text-slate-400 font-bold tracking-widest text-sm mb-4">SCROLL TO EXPLORE</p>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-             </div>
-          )}
-
-        </div>
-
-        {/* ===== スタッキングセクション (フルスクリーン) ===== */}
-        {!loading && !error && (
-          <div className="relative w-full">
-            {filteredProjects.map((project, index) => (
-              <StickySection key={project.id} project={project} index={index} />
-            ))}
-          </div>
-        )}
-
-        {/* ===== フッター ===== */}
-        <div className="relative bg-[#020617]" style={{ zIndex: 100 }}>
-          <footer className="pt-8 pb-12 border-t border-slate-800/60 text-center text-sm font-bold text-slate-500 tracking-wider">
+          {/* ===== フッター ===== */}
+          <footer className="mt-16 py-8 border-t border-slate-800/60 text-center text-sm font-bold text-slate-600 tracking-wider">
             <p>© {new Date().getFullYear()} GAME ARCADE ARCHIVE.</p>
-            <p className="mt-1 text-xs font-normal">All systems operational.</p>
+            <p className="mt-1 text-xs font-normal text-slate-700">All systems operational.</p>
           </footer>
-        </div>
-      </>
-    );
+
+          {/* ===== ゲームモーダル ===== */}
+          {activeProject && (
+            <GameModal
+              project={activeProject}
+              onClose={() => setActiveProject(null)}
+            />
+          )}
+        </>
+      );
     }
 
     ReactDOM.createRoot(document.getElementById('root')).render(<App />);
