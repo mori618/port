@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Works | ポートフォリオ</title>
-  <meta name="description" content="ゲーム・WebサービスなどのオリジナルWEB制作物をまとめたポートフォリオサイトです。" />
-  <meta property="og:title" content="My Works | ポートフォリオ" />
-  <meta property="og:description" content="ゲーム・WebサービスなどのオリジナルWEB制作物をまとめたポートフォリオサイトです。" />
+  <title>GAME ARCADE | ポータル</title>
+  <meta name="description" content="今すぐ遊べるブラウザゲーム大集合！無料で遊べる最高のゲーム体験をここで。" />
+  <meta property="og:title" content="GAME ARCADE | ゲームポータル" />
+  <meta property="og:description" content="オリジナル・ブラウザゲームが遊び放題！さぁ、新しい体験を始めよう。" />
   <meta property="og:type" content="website" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'media',
+      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
@@ -21,8 +21,9 @@
           },
           colors: {
             accent: {
-              DEFAULT: '#6C63FF',
-              dark: '#5a52d4',
+              DEFAULT: '#8b5cf6',
+              dark: '#7c3aed',
+              neon: '#c084fc',
             },
           },
           keyframes: {
@@ -30,9 +31,19 @@
               '0%': { opacity: '0', transform: 'translateY(12px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
+            fadeInScale: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(40px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
           },
           animation: {
             fadeIn: 'fadeIn 0.4s ease both',
+            fadeInScale: 'fadeInScale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+            slideUp: 'slideUp 0.5s ease both',
           },
         },
       },
@@ -42,7 +53,10 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
+
+  <!-- Material Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 
   <!-- React + Babel (CDN) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -50,57 +64,228 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    /* スクロールバーのカスタマイズ */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #6C63FF55; border-radius: 99px; }
+    /* スクロールバーを非表示 */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+
+    /* ベース背景色 */
+    html, body {
+      background-color: #020617;
+      color: #f8fafc;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 背景グラデーション（固定） */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 80% 10%, rgba(139, 92, 246, 0.18), transparent 45%),
+        radial-gradient(circle at 10% 80%, rgba(14, 165, 233, 0.12), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(236, 72, 153, 0.05), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ネオンテキスト */
+    .neon-title {
+      background: linear-gradient(135deg, #c084fc 0%, #818cf8 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
+    }
 
     /* カードホバーエフェクト */
-    .project-card {
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    .game-card {
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
-    .project-card:hover {
-      transform: translateY(-4px);
+    .game-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .game-card:hover::before {
+      opacity: 1;
+    }
+    .game-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      border-color: rgba(139, 92, 246, 0.5);
+      box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(139, 92, 246, 0.2),
+        0 0 30px rgba(139, 92, 246, 0.15);
+    }
+    .game-card:active {
+      transform: translateY(-2px) scale(0.99);
     }
 
     /* サムネイル画像のズームエフェクト */
-    .thumb-wrap { overflow: hidden; }
-    .thumb-wrap img {
-      transition: transform 0.4s ease;
+    .thumb-wrap { 
+      overflow: hidden; 
+      position: relative;
     }
-    .project-card:hover .thumb-wrap img {
-      transform: scale(1.06);
+    .thumb-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.2) 50%, transparent 100%);
+    }
+    .thumb-wrap img {
+      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .game-card:hover .thumb-wrap img {
+      transform: scale(1.08);
+    }
+
+    /* プレイボタンのオーバーレイ */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(2px);
+    }
+    .game-card:hover .play-overlay {
+      opacity: 1;
     }
 
     /* タグボタン */
     .tag-btn {
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+      transition: all 0.2s ease;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .tag-btn:hover {
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+    .tag-btn.active {
+      background: rgba(139, 92, 246, 0.9);
+      border-color: rgba(139, 92, 246, 0.8);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+    }
+
+    /* モーダルオーバーレイ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* モーダルヘッダー */
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+    }
+
+    /* iframeコンテナ */
+    .modal-iframe-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal-iframe-wrap iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* タグバッジ */
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #c084fc;
+    }
+
+    /* カードのアニメーション遅延 */
+    .card-delay-0 { animation-delay: 0ms; }
+    .card-delay-1 { animation-delay: 60ms; }
+    .card-delay-2 { animation-delay: 120ms; }
+    .card-delay-3 { animation-delay: 180ms; }
+    .card-delay-4 { animation-delay: 240ms; }
+    .card-delay-5 { animation-delay: 300ms; }
+
+    /* コンテンツラッパー */
+    #root {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+    }
+
+    /* グリッドレイアウトのグロー効果 */
+    .grid-glow {
+      background: radial-gradient(circle at center, rgba(139, 92, 246, 0.03), transparent 70%);
+    }
+
+    /* スタッツバー */
+    .stats-bar {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(8px);
     }
   </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
+<body class="font-sans">
 
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+    const { useState, useEffect, useMemo, useCallback } = React;
 
-    /* ===== ユーティリティ ===== */
-    // サムネイルが存在しない場合のフォールバック画像（グラデーション生成）
+    /* ===== プレースホルダーサムネイル ===== */
     function PlaceholderThumb({ title }) {
       const colors = [
-        ['#6C63FF', '#a78bfa'],
+        ['#8b5cf6', '#c084fc'],
         ['#f59e0b', '#fb923c'],
         ['#10b981', '#34d399'],
-        ['#3b82f6', '#60a5fa'],
+        ['#0ea5e9', '#38bdf8'],
         ['#ef4444', '#f87171'],
-        ['#8b5cf6', '#c084fc'],
+        ['#ec4899', '#f472b6'],
       ];
       const idx = (title.charCodeAt(0) || 0) % colors.length;
       const [c1, c2] = colors[idx];
       return (
         <div
-          className="w-full h-48 flex items-center justify-center text-white text-4xl font-bold select-none"
+          className="w-full h-full flex items-center justify-center text-white text-6xl font-black select-none"
           style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
         >
           {title.charAt(0)}
@@ -108,49 +293,137 @@
       );
     }
 
-    /* ===== プロジェクトカード ===== */
-    function ProjectCard({ project, onTagClick, selectedTags }) {
+    /* ===== ゲームカード ===== */
+    function GameCard({ project, index, onOpen }) {
       const [imgError, setImgError] = useState(false);
+
       return (
-        <a
-          href={project.detail_url}
-          className="project-card block rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl dark:hover:shadow-gray-800 animate-fadeIn"
-          aria-label={`${project.title}の詳細ページへ`}
+        <div
+          className={`game-card rounded-2xl animate-fadeIn card-delay-${Math.min(index, 5)}`}
+          onClick={() => onOpen(project)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
+          aria-label={`${project.title} をプレイ`}
         >
-          <div className="thumb-wrap h-48 bg-gray-200 dark:bg-gray-800">
+          {/* サムネイル */}
+          <div className="thumb-wrap h-44 rounded-t-2xl">
             {imgError ? (
               <PlaceholderThumb title={project.title} />
             ) : (
               <img
                 src={project.thumbnail}
                 alt={`${project.title}のサムネイル`}
-                className="w-full h-48 object-cover"
                 onError={() => setImgError(true)}
                 loading="lazy"
               />
             )}
-          </div>
-          <div className="p-5">
-            <h2 className="text-base font-bold mb-1 line-clamp-1">{project.title}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3 line-clamp-2 leading-relaxed">{project.description_short}</p>
-            <div className="flex flex-wrap gap-1.5">
-              {project.tags.map(tag => (
-                <button
-                  key={tag}
-                  onClick={e => { e.preventDefault(); onTagClick(tag); }}
-                  className={`tag-btn text-xs px-2.5 py-1 rounded-full border font-medium
-                    ${selectedTags.includes(tag)
-                      ? 'bg-accent text-white border-accent dark:bg-accent dark:border-accent'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-accent hover:text-accent dark:hover:border-accent dark:hover:text-accent'
-                    }`}
-                  aria-pressed={selectedTags.includes(tag)}
-                >
-                  {tag}
-                </button>
-              ))}
+            {/* プレイオーバーレイ */}
+            <div className="play-overlay rounded-t-2xl">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 rounded-full bg-accent/90 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.8)] backdrop-blur-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white ml-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <span className="text-white text-xs font-black tracking-widest">PLAY NOW</span>
+              </div>
             </div>
           </div>
-        </a>
+
+          {/* カード本文 */}
+          <div className="p-4">
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h2 className="text-white font-black text-base leading-tight">{project.title}</h2>
+              <span className="shrink-0 w-6 h-6 rounded-full bg-green-400/15 border border-green-400/40 flex items-center justify-center" title="プレイ可能">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+              </span>
+            </div>
+
+            <p className="text-slate-400 text-xs leading-relaxed mb-3 line-clamp-2">
+              {project.description_short}
+            </p>
+
+            {/* タグ */}
+            <div className="flex flex-wrap gap-1.5">
+              {project.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="tag-badge">{tag}</span>
+              ))}
+              {project.tags.length > 3 && (
+                <span className="tag-badge opacity-60">+{project.tags.length - 3}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    /* ===== ゲームモーダル ===== */
+    function GameModal({ project, onClose }) {
+      // ESCキーで閉じる
+      useEffect(() => {
+        const handleKey = (e) => { if (e.key === 'Escape') onClose(); };
+        window.addEventListener('keydown', handleKey);
+        // スクロールを止める
+        document.body.style.overflow = 'hidden';
+        return () => {
+          window.removeEventListener('keydown', handleKey);
+          document.body.style.overflow = '';
+        };
+      }, [onClose]);
+
+      if (!project) return null;
+
+      return (
+        <div className="modal-overlay animate-fadeInScale" role="dialog" aria-modal="true" aria-label={`${project.title}ゲームウィンドウ`}>
+          {/* ヘッダー */}
+          <div className="modal-header">
+            <button
+              onClick={onClose}
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-red-500/80 transition-all duration-200 text-white shrink-0 border border-white/10"
+              aria-label="閉じる"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* タイトル */}
+            <div className="flex-1 min-w-0">
+              <p className="text-white font-black text-sm truncate">{project.title}</p>
+              <p className="text-slate-500 text-xs truncate">{project.detail_url}</p>
+            </div>
+
+            {/* タグ（デスクトップのみ） */}
+            <div className="hidden md:flex gap-1.5 shrink-0">
+              {project.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="tag-badge">{tag}</span>
+              ))}
+            </div>
+
+            {/* 別タブで開くボタン */}
+            <a
+              href={project.detail_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-accent/80 transition-all duration-200 text-white shrink-0 border border-white/10"
+              title="別タブで開く"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
+
+          {/* iframeエリア */}
+          <div className="modal-iframe-wrap">
+            <iframe
+              src={project.detail_url}
+              title={project.title}
+              allow="fullscreen"
+            />
+          </div>
+        </div>
       );
     }
 
@@ -161,8 +434,8 @@
       const [error, setError] = useState(null);
       const [selectedTags, setSelectedTags] = useState([]);
       const [sortKey, setSortKey] = useState('newest');
+      const [activeProject, setActiveProject] = useState(null);
 
-      /* JSONデータ読み込み */
       useEffect(() => {
         fetch('./projects.json')
           .then(res => {
@@ -173,163 +446,164 @@
           .catch(err => { setError(err.message); setLoading(false); });
       }, []);
 
-      /* 全タグ一覧（重複なし） */
       const allTags = useMemo(() => {
         const set = new Set();
         projects.forEach(p => p.tags.forEach(t => set.add(t)));
         return [...set];
       }, [projects]);
 
-      /* タグ選択トグル */
-      const toggleTag = tag => {
+      const toggleTag = useCallback(tag => {
         setSelectedTags(prev =>
           prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
         );
-      };
+      }, []);
 
-      /* フィルター & ソート */
       const filteredProjects = useMemo(() => {
         let result = projects;
-
-        /* AND フィルター */
         if (selectedTags.length > 0) {
           result = result.filter(p =>
             selectedTags.every(tag => p.tags.includes(tag))
           );
         }
-
-        /* ソート */
         result = [...result].sort((a, b) => {
           if (sortKey === 'newest') return new Date(b.created_at) - new Date(a.created_at);
           if (sortKey === 'oldest') return new Date(a.created_at) - new Date(b.created_at);
           if (sortKey === 'name')   return a.title.localeCompare(b.title, 'ja');
           return 0;
         });
-
         return result;
       }, [projects, selectedTags, sortKey]);
 
       return (
-        <div className="max-w-5xl mx-auto px-4 py-10">
+        <>
+          <div className="max-w-6xl mx-auto px-4 py-16">
 
-          {/* ===== ヘッダー ===== */}
-          <header className="mb-10 text-center">
-            <div className="inline-flex items-center gap-2 mb-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse"></span>
-              <span className="text-xs font-semibold tracking-widest uppercase text-accent">Portfolio</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3">
-              My Works
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
-              ゲーム・Webサービスなどのオリジナル制作物をまとめています。
-            </p>
-          </header>
+            {/* ===== ヘッダー ===== */}
+            <header className="mb-14 text-center animate-slideUp">
+              <div className="inline-flex items-center gap-2 mb-5 bg-slate-800/60 px-4 py-1.5 rounded-full border border-slate-700/80">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                <span className="text-xs font-black tracking-[0.2em] text-slate-300">FREE TO PLAY ARCHIVE</span>
+              </div>
+              <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-5 neon-title italic">
+                GAME ARCADE
+              </h1>
+              <p className="text-slate-400 text-base md:text-lg max-w-xl mx-auto leading-relaxed font-medium">
+                ブラウザですぐに遊べるオリジナルゲーム大集合。<br className="hidden md:inline" />
+                カードをクリックして、今すぐプレイ！
+              </p>
+            </header>
 
-          {/* ===== 広告枠（上部） ===== */}
-          {/* <div className="mb-8 text-center">
-            ここにGoogle AdSense コードを挿入
-          </div> */}
-
-          {/* ===== コントロールパネル ===== */}
-          <div className="mb-8 space-y-4">
-            {/* タグフィルター */}
-            <div>
-              <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-2 tracking-wider uppercase">フィルター（AND検索）</p>
-              <div className="flex flex-wrap gap-2" role="group" aria-label="タグフィルター">
-                {allTags.map(tag => (
-                  <button
-                    key={tag}
-                    id={`filter-tag-${tag}`}
-                    onClick={() => toggleTag(tag)}
-                    className={`tag-btn text-sm px-3.5 py-1.5 rounded-full border font-medium
-                      ${selectedTags.includes(tag)
-                        ? 'bg-accent text-white border-accent shadow-md shadow-accent/20'
-                        : 'bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-accent hover:text-accent dark:hover:border-accent dark:hover:text-accent'
+            {/* ===== コントロールパネル ===== */}
+            <div className="mb-10 p-5 rounded-2xl stats-bar flex flex-col md:flex-row gap-5 justify-between items-start md:items-center">
+              {/* タグフィルター */}
+              <div className="flex-1">
+                <p className="text-xs font-black text-accent-neon mb-3 tracking-widest flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                  </svg>
+                  ジャンルで絞り込む
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {allTags.map(tag => (
+                    <button
+                      key={tag}
+                      id={`tag-${tag}`}
+                      onClick={() => toggleTag(tag)}
+                      className={`tag-btn text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+                        selectedTags.includes(tag)
+                          ? 'active text-white'
+                          : 'text-slate-300 hover:text-white'
                       }`}
-                    aria-pressed={selectedTags.includes(tag)}
-                  >
-                    {tag}
-                  </button>
-                ))}
-                {selectedTags.length > 0 && (
-                  <button
-                    onClick={() => setSelectedTags([])}
-                    className="text-sm px-3.5 py-1.5 rounded-full border border-dashed border-gray-300 dark:border-gray-600 text-gray-400 hover:text-red-400 hover:border-red-300 transition-colors"
-                    aria-label="フィルターをリセット"
-                  >
-                    ✕ リセット
-                  </button>
-                )}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                  {selectedTags.length > 0 && (
+                    <button
+                      id="clear-tags"
+                      onClick={() => setSelectedTags([])}
+                      className="text-xs px-3.5 py-1.5 rounded-xl border border-dashed border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors font-bold"
+                    >
+                      ✕ クリア
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* ソートと件数 */}
+              <div className="flex items-center gap-3 shrink-0">
+                <p className="text-sm text-slate-400 font-medium">
+                  <span className="text-xl text-white font-black">{filteredProjects.length}</span>
+                  <span className="ml-1 text-xs">件</span>
+                </p>
+                <select
+                  id="sort-select"
+                  value={sortKey}
+                  onChange={e => setSortKey(e.target.value)}
+                  className="text-xs px-3 py-2 rounded-xl border border-slate-600 bg-slate-800/80 text-white font-bold focus:outline-none focus:border-accent cursor-pointer"
+                >
+                  <option value="newest">新着順</option>
+                  <option value="oldest">古い順</option>
+                  <option value="name">名前順</option>
+                </select>
               </div>
             </div>
 
-            {/* ソートと件数表示 */}
-            <div className="flex items-center justify-between flex-wrap gap-3">
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                <span className="text-gray-700 dark:text-gray-200 font-semibold">{filteredProjects.length}</span>
-                &nbsp;件の制作物
-              </p>
-              <select
-                id="sort-select"
-                value={sortKey}
-                onChange={e => setSortKey(e.target.value)}
-                className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-accent cursor-pointer"
-                aria-label="並び替え"
-              >
-                <option value="newest">新しい順</option>
-                <option value="oldest">古い順</option>
-                <option value="name">名前順</option>
-              </select>
-            </div>
+            {/* ===== ローディング ===== */}
+            {loading && (
+              <div className="text-center py-32 text-accent">
+                <div className="inline-block w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+                <p className="font-black tracking-widest text-sm animate-pulse">LOADING...</p>
+              </div>
+            )}
+
+            {/* ===== エラー ===== */}
+            {error && (
+              <div className="text-center py-32 text-red-400">
+                <span className="material-icons text-6xl mb-4 block">warning</span>
+                <p className="font-bold">{error}</p>
+              </div>
+            )}
+
+            {/* ===== ゲームが見つからない ===== */}
+            {!loading && !error && filteredProjects.length === 0 && (
+              <div className="text-center py-32 text-slate-500">
+                <span className="material-icons text-7xl mb-6 opacity-20 block">sports_esports</span>
+                <p className="text-xl font-bold">該当するゲームがありません</p>
+                <p className="text-sm mt-2">フィルター条件を変更してみてください。</p>
+              </div>
+            )}
+
+            {/* ===== ゲームカードグリッド ===== */}
+            {!loading && !error && filteredProjects.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredProjects.map((project, index) => (
+                  <GameCard
+                    key={project.id}
+                    project={project}
+                    index={index}
+                    onOpen={setActiveProject}
+                  />
+                ))}
+              </div>
+            )}
+
           </div>
 
-          {/* ===== プロジェクト一覧 ===== */}
-          {loading && (
-            <div className="text-center py-24 text-gray-400">
-              <div className="inline-block w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
-              <p>読み込み中...</p>
-            </div>
-          )}
-
-          {error && (
-            <div className="text-center py-24 text-red-400">
-              <p className="text-2xl mb-2">⚠️</p>
-              <p>{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && filteredProjects.length === 0 && (
-            <div className="text-center py-24 text-gray-400 dark:text-gray-600">
-              <p className="text-4xl mb-3">🔍</p>
-              <p>条件に一致する制作物が見つかりませんでした。</p>
-            </div>
-          )}
-
-          {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProjects.map(project => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onTagClick={toggleTag}
-                  selectedTags={selectedTags}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* ===== 広告枠（下部） ===== */}
-          {/* <div className="mt-12 text-center">
-            ここにGoogle AdSense コードを挿入
-          </div> */}
-
           {/* ===== フッター ===== */}
-          <footer className="mt-16 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
-            <p>© {new Date().getFullYear()} My Works. All rights reserved.</p>
+          <footer className="mt-16 py-8 border-t border-slate-800/60 text-center text-sm font-bold text-slate-600 tracking-wider">
+            <p>© {new Date().getFullYear()} GAME ARCADE ARCHIVE.</p>
+            <p className="mt-1 text-xs font-normal text-slate-700">All systems operational.</p>
           </footer>
 
-        </div>
+          {/* ===== ゲームモーダル ===== */}
+          {activeProject && (
+            <GameModal
+              project={activeProject}
+              onClose={() => setActiveProject(null)}
+            />
+          )}
+        </>
       );
     }
 

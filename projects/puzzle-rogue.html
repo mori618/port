@@ -1,146 +1,375 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- ===== 各制作物に合わせてここを変更してください ===== -->
-  <title>Puzzle Rogue | My Works</title>
-  <meta name="description" content="ブラウザで遊べるパズル×ローグライクゲーム。コンボを繋いで強力なトークンを獲得しよう！" />
-  <meta property="og:title" content="Puzzle Rogue | My Works" />
-  <meta property="og:description" content="ブラウザで遊べるパズル×ローグライクゲーム。コンボを繋いで強力なトークンを獲得しよう！" />
+  <title>Puzzle Rogue | 遊んでみよう！</title>
+  <meta name="description" content="パズル×ローグライク！コンボを繋いで強力なトークンを獲得し、ランダム生成のダンジョンを攻略しよう！" />
+  <meta property="og:title" content="Puzzle Rogue | 新感覚パズル×ローグライク" />
+  <meta property="og:description" content="パズル×ローグライク！コンボを繋いで強力なトークンを獲得し、ランダム生成のダンジョンを攻略しよう！" />
   <meta property="og:image" content="../images/puzzle-rogue-thumb.jpg" />
-  <meta property="og:type" content="article" />
+  <meta property="og:type" content="website" />
   <meta name="twitter:card" content="summary_large_image" />
-  <!-- ================================================== -->
 
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
-      darkMode: 'media',
+      darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'],
-          },
+          fontFamily: { sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'] },
           colors: {
-            accent: { DEFAULT: '#6C63FF', dark: '#5a52d4' },
+            game: {
+              primary: '#8b5cf6', // Violet
+              secondary: '#ec4899', // Pink
+              accent: '#06b6d4', // Cyan
+              dark: '#020617', // Slate 950
+              card: 'rgba(30, 41, 59, 0.6)' // Slate 800 with opacity
+            }
           },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'float-delayed': 'float 6s ease-in-out 3s infinite',
+            'float-fast': 'float 4s ease-in-out 1s infinite',
+            'pulse-glow': 'pulseGlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'shimmer': 'shimmer 2s linear infinite',
+            'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0) rotate(0deg)' },
+              '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: 1, transform: 'scale(1)' },
+              '50%': { opacity: 0.9, transform: 'scale(1.02)' },
+            },
+            shimmer: {
+              from: { transform: 'translateX(-200%) skewX(-15deg)' },
+              to: { transform: 'translateX(200%) skewX(-15deg)' },
+            },
+            fadeInUp: {
+              '0%': { opacity: 0, transform: 'translateY(40px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            }
+          }
         },
       },
     };
   </script>
-
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    /* スクロールバーを非表示 */
+    ::-webkit-scrollbar { display: none; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+
+    body {
+      background-color: #020617;
+      /* 深いダークブルー */
+      color: #f8fafc;
+      overflow-x: hidden;
+    }
+
+    /* 背景のオーブ（光のボケ）エフェクト */
+    .bg-orbs::before,
+    .bg-orbs::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      z-index: -1;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .bg-orbs::before {
+      top: -10%;
+      left: -10%;
+      width: 50vw;
+      height: 50vw;
+      background: radial-gradient(circle, #8b5cf6 0%, transparent 70%);
+    }
+
+    .bg-orbs::after {
+      bottom: -10%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, #ec4899 0%, transparent 70%);
+    }
+
+    /* ネオンテキスト */
+    .neon-text {
+      background: linear-gradient(to right, #a78bfa, #f472b6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(139, 92, 246, 0.4);
+    }
+
+    /* 最強のCTAボタン */
+    .btn-play {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.1) inset,
+        0 15px 35px -5px rgba(139, 92, 246, 0.5),
+        0 10px 20px -5px rgba(236, 72, 153, 0.4),
+        0 0 20px rgba(139, 92, 246, 0.4);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .btn-play:hover {
+      transform: translateY(-6px) scale(1.05);
+      box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.2) inset,
+        0 25px 45px -5px rgba(139, 92, 246, 0.7),
+        0 15px 25px -5px rgba(236, 72, 153, 0.6),
+        0 0 40px rgba(236, 72, 153, 0.6);
+    }
+
+    .btn-play:active {
+      transform: translateY(2px) scale(0.98);
+      box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* グラスモーフィズムカード（Bento UI用） */
+    .bento-card {
+      background: rgba(30, 41, 59, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .bento-card:hover {
+      background: rgba(30, 41, 59, 0.6);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.2);
+    }
+
+    /* ナンバリングのネオンリング */
+    .neon-ring {
+      position: relative;
+    }
+
+    .neon-ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: inherit;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      filter: blur(8px);
+    }
+
+    .group:hover .neon-ring::before {
+      opacity: 0.7;
+    }
+
+    /* アニメーション遅延用クラス */
+    .delay-100 {
+      animation-delay: 100ms;
+    }
+
+    .delay-200 {
+      animation-delay: 200ms;
+    }
+
+    .delay-300 {
+      animation-delay: 300ms;
+    }
+
+    .delay-400 {
+      animation-delay: 400ms;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 font-sans min-h-screen">
-  <div class="max-w-3xl mx-auto px-4 py-10">
 
-    <!-- ===== 戻るボタン ===== -->
-    <a
-      href="../index.html"
-      id="back-to-list"
-      class="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent font-medium mb-8 transition-colors"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-      </svg>
-      一覧に戻る
-    </a>
+<body class="font-sans min-h-screen bg-orbs relative selection:bg-pink-500 selection:text-white">
 
-    <!-- ===== メインコンテンツ ===== -->
-    <article>
+  <div class="max-w-6xl mx-auto px-4 py-8 relative z-10">
 
-      <!-- タイトル -->
-      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">Puzzle Rogue</h1>
 
-      <!-- メタ情報 -->
-      <div class="flex flex-wrap items-center gap-3 mb-6 text-sm text-gray-400 dark:text-gray-500">
-        <span>🗓 制作：2024年4月</span>
-        <span>•</span>
-        <span>🔄 最終更新：2024年4月</span>
+
+    <!-- ヒーローセクション -->
+    <header class="text-center mb-24 relative">
+      <!-- 浮遊する背景アイコン -->
+      <div class="absolute top-0 left-1/4 opacity-20 animate-float pointer-events-none hidden md:block">
+        <span class="material-icons text-5xl">extension</span>
+      </div>
+      <div
+        class="absolute top-20 right-1/4 opacity-20 animate-float-delayed pointer-events-none hidden md:block">
+        <span class="material-icons text-4xl">diamond</span>
+      </div>
+      <div
+        class="absolute bottom-10 left-1/3 opacity-10 animate-float-fast pointer-events-none hidden md:block">
+        <span class="material-icons text-6xl">bolt</span>
       </div>
 
-      <!-- タグ -->
-      <div class="flex flex-wrap gap-2 mb-8">
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ゲーム</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">パズル</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">ローグライク</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">React</span>
-        <span class="text-xs px-3 py-1 rounded-full bg-accent/10 text-accent dark:bg-accent/20 font-medium">JavaScript</span>
+      <div class="inline-block animate-float mb-6 relative">
+        <div class="absolute inset-0 bg-game-primary blur-2xl opacity-40 rounded-full"></div>
+        <span class="material-icons text-7xl relative z-10 drop-shadow-2xl">extension</span>
       </div>
 
-      <!-- メイン画像 -->
-      <div class="rounded-2xl overflow-hidden mb-8 bg-gray-200 dark:bg-gray-800 aspect-video flex items-center justify-center">
-        <img
-          src="../images/puzzle-rogue-thumb.jpg"
-          alt="Puzzle Rogueのスクリーンショット"
-          class="w-full object-cover"
-          onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>🎮 No Image</div>'"
-        />
+      <h1
+        class="text-6xl md:text-8xl font-black mb-6 tracking-tighter neon-text opacity-0 animate-fade-in-up delay-100">
+        Puzzle Rogue
+      </h1>
+
+      <p
+        class="text-xl md:text-2xl font-bold text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed opacity-0 animate-fade-in-up delay-200">
+        脳汁溢れる大連鎖！<br class="md:hidden" />パズルのコンボで敵をなぎ倒す<br />
+        <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-game-accent to-game-primary">新感覚ローグライクRPG！</span>
+      </p>
+
+      <!-- 最強のCTAボタン -->
+      <div class="flex justify-center mb-16 opacity-0 animate-fade-in-up delay-300 relative z-20">
+        <div class="relative group inline-block">
+          <!-- パルスエフェクト背景 -->
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl blur-xl opacity-50 group-hover:opacity-80 animate-pulse-glow transition-opacity duration-300">
+          </div>
+
+          <a href="https://pazure.yurand.com/" target="_blank" rel="noopener noreferrer" id="play-game-btn"
+            class="btn-play relative px-12 py-5 rounded-2xl text-white font-black text-2xl md:text-3xl flex items-center gap-4 overflow-hidden">
+            <!-- シマー（キラキラ）エフェクト -->
+            <div
+              class="absolute inset-0 bg-white/20 translate-x-[-150%] skew-x-[-15deg] group-hover:animate-[shimmer_1.5s_infinite]">
+            </div>
+
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 md:w-10 md:h-10 group-hover:animate-bounce"
+              fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            <span class="relative z-10 tracking-wide">今すぐプレイ！</span>
+          </a>
+        </div>
       </div>
 
-      <!-- 詳細説明 -->
-      <section class="mb-8 space-y-4 text-base leading-relaxed text-gray-700 dark:text-gray-300">
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">📖 制作物について</h2>
-        <p>
-          ブラウザで遊べるパズル×ローグライク要素を掛け合わせたオリジナルゲームです。
-          コンボを繋げることで強力なトークンを獲得し、ランダムに生成されるダンジョンを攻略していきます。
-        </p>
-        <p>
-          Reactを使用してSPA構成で実装しており、ゲーム状態はlocalStorageを利用して
-          ブラウザ上で管理されます。
-        </p>
+      <!-- サムネイル画像（グラスモーフィズムフレーム） -->
+      <div
+        class="relative max-w-4xl mx-auto rounded-[2rem] p-2 bg-white/5 backdrop-blur-sm border border-white/10 shadow-2xl opacity-0 animate-fade-in-up delay-400 group">
+        <div
+          class="absolute inset-0 bg-gradient-to-r from-game-primary to-game-secondary opacity-0 group-hover:opacity-20 blur-xl transition-opacity duration-500 rounded-[2rem]">
+        </div>
+        <div class="relative rounded-3xl overflow-hidden bg-slate-900 border border-slate-700/50">
+          <img src="../images/puzzle-rogue-thumb.jpg" alt="Puzzle Rogueのプレイ画面"
+            class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+            onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full aspect-[16/9] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black flex flex-col items-center justify-center text-white gap-6 relative overflow-hidden\'><div class=\'absolute inset-0 bg-[url(\\\'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+\\\')] opacity-50\'></div><span class=\'material-icons text-8xl animate-float relative z-10\'>extension</span><span class=\'text-4xl md:text-5xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 relative z-10 drop-shadow-lg\'>PUZZLE ROGUE</span></div>'" />
+
+          <!-- オーバーレイグラデーション -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-60 pointer-events-none">
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- メインコンテンツ (Bento UI) -->
+    <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-24 max-w-5xl mx-auto">
+
+      <!-- Bento Box 1: 熱狂のポイント (左側大枠) -->
+      <section class="lg:col-span-5 bento-card rounded-[2rem] p-8 md:p-10 flex flex-col opacity-0 animate-fade-in-up"
+        style="animation-delay: 500ms;">
+        <div
+          class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/30 flex items-center justify-center mb-6 shadow-inner">
+          <span class="material-icons text-3xl">whatshot</span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-black mb-6 tracking-tight">
+          パズルの腕前が<br /><span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">世界を救う！</span>
+        </h2>
+        <div class="space-y-6 flex-grow">
+          <p class="text-slate-300 leading-relaxed font-medium">
+            「パズル」と「ローグライク」の奇跡の融合。あなたの閃きがそのまま強力な一撃に変わります。
+          </p>
+          <div class="h-px w-full bg-gradient-to-r from-white/10 to-transparent"></div>
+          <p class="text-slate-400 leading-relaxed text-sm">
+            ピースを繋げて大連鎖を叩き込み、立ちはだかるモンスターを蹴散らせ。ダンジョンは遊ぶたびにランダム生成され、二度と同じ冒険はありません。道中で手に入る様々な性能のトークンを組み合わせ、自分だけの最強ビルドを構築しよう！
+          </p>
+        </div>
       </section>
 
-      <!-- 技術スタック -->
-      <section class="mb-10">
-        <h2 class="text-xl font-bold mb-3">🛠 使用技術</h2>
-        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1 text-sm">
-          <li>React 18 (Vite)</li>
-          <li>Tailwind CSS</li>
-          <li>JavaScript (ES2022)</li>
-          <li>localStorage</li>
-        </ul>
-      </section>
+      <!-- Bento Box 2: 遊び方 (右側縦積み) -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
 
-      <!-- アクションボタン -->
-      <div class="flex flex-wrap gap-4 mb-12">
-        <a
-          id="play-game-btn"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-accent text-white font-semibold text-sm hover:bg-accent-dark transition-colors shadow-lg shadow-accent/20 hover:shadow-accent/30"
-        >
-          🎮 ゲームをプレイ
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-        <!-- GitHubリンク（任意） -->
-        <!-- <a href="#" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium hover:border-accent hover:text-accent transition-colors">
-          📦 ソースコード
-        </a> -->
+        <div class="bento-card rounded-3xl p-6 px-8 flex items-center gap-6 group opacity-0 animate-fade-in-up"
+          style="animation-delay: 600ms;">
+          <div class="neon-ring shrink-0">
+            <div
+              class="w-16 h-16 rounded-2xl bg-slate-800 border border-fuchsia-500/30 text-fuchsia-400 flex flex-col justify-center items-center font-black text-2xl shadow-[0_0_15px_rgba(217,70,239,0.2)] group-hover:scale-110 transition-transform duration-300">
+              1
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-2 text-white group-hover:text-fuchsia-300 transition-colors">
+              パズルを連鎖させる</h3>
+            <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+              同じ色のピースをなぞって繋げよう！長く繋げるほど強力なダメージを与え、大コンボで一発逆転を狙え。</p>
+          </div>
+        </div>
+
+        <div class="bento-card rounded-3xl p-6 px-8 flex items-center gap-6 group opacity-0 animate-fade-in-up"
+          style="animation-delay: 700ms;">
+          <div class="neon-ring shrink-0">
+            <div
+              class="w-16 h-16 rounded-2xl bg-slate-800 border border-indigo-500/30 text-indigo-400 flex flex-col justify-center items-center font-black text-2xl shadow-[0_0_15px_rgba(99,102,241,0.2)] group-hover:scale-110 transition-transform duration-300">
+              2
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-2 text-white group-hover:text-indigo-300 transition-colors">
+              強力なスキルを獲得</h3>
+            <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+              敵を倒すとドロップする「トークン」を装備して能力を永続強化。パズルの消し方を変化させる凶悪なスキルも！？</p>
+          </div>
+        </div>
+
+        <div class="bento-card rounded-3xl p-6 px-8 flex items-center gap-6 group opacity-0 animate-fade-in-up"
+          style="animation-delay: 800ms;">
+          <div class="neon-ring shrink-0">
+            <div
+              class="w-16 h-16 rounded-2xl bg-slate-800 border border-cyan-500/30 text-cyan-400 flex flex-col justify-center items-center font-black text-2xl shadow-[0_0_15px_rgba(6,182,212,0.2)] group-hover:scale-110 transition-transform duration-300">
+              3
+            </div>
+          </div>
+          <div>
+            <h3 class="font-bold text-xl md:text-2xl mb-2 text-white group-hover:text-cyan-300 transition-colors">
+              未知の深層へ挑む</h3>
+            <p class="text-slate-400 text-sm md:text-base leading-relaxed">
+              ランダム生成されるルートを選択し、待ち受ける罠やエリートモンスターを突破して、最深部のボスを討伐せよ。</p>
+          </div>
+        </div>
+
+      </section>
+    </main>
+
+    <!-- フッター -->
+    <footer
+      class="border-t border-white/10 pt-8 pb-12 flex flex-col md:flex-row justify-between items-center gap-6 opacity-0 animate-fade-in-up"
+      style="animation-delay: 900ms;">
+      <div class="flex items-center gap-3 text-slate-500 text-sm">
+        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <span class="font-bold text-slate-400">System Ready:</span> React 18 / Tailwind CSS / LocalStorage
       </div>
 
-      <!-- ===== 広告枠（コンテンツ下部） ===== -->
-      <!-- <div class="text-center mb-8">
-        ここにGoogle AdSense コードを挿入
-      </div> -->
-
-    </article>
-
-    <!-- ===== フッター ===== -->
-    <footer class="mt-8 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400 dark:text-gray-600">
-      <p>© <script>document.write(new Date().getFullYear())</script> My Works. All rights reserved.</p>
+      <p class="text-slate-600 text-xs font-medium tracking-wider">
+        &copy; 2026 Puzzle Rogue. All rights reserved.
+      </p>
     </footer>
 
   </div>
 </body>
+
 </html>
