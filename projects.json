@@ -7,7 +7,9 @@
     "thumbnail": "./images/fishing-thumb.jpg",
     "detail_url": "./projects/fishing.html",
     "tags": ["ゲーム", "シミュレーション", "放置", "JavaScript"],
-    "created_at": "2025-01-01"
+    "created_at": "2025-01-01",
+    "in_development": true,
+    "disabled": true
   },
   {
     "id": "ggdemon",
@@ -17,7 +19,8 @@
     "thumbnail": "./images/ggdemon-thumb.jpg",
     "detail_url": "./projects/ggdemon.html",
     "tags": ["ゲーム", "ターン制", "ストラテジー", "JavaScript"],
-    "created_at": "2024-12-01"
+    "created_at": "2024-12-01",
+    "in_development": true
   },
   {
     "id": "swing-jump",
@@ -37,6 +40,7 @@
     "thumbnail": "./images/puzzle-rogue-thumb.jpg",
     "detail_url": "./projects/puzzle-rogue.html",
     "tags": ["ゲーム", "パズル", "ローグライク", "React", "JavaScript"],
-    "created_at": "2024-04-01"
+    "created_at": "2024-04-01",
+    "in_development": true
   }
 ]
