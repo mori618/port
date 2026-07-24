@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8223576768449365"
        crossorigin="anonymous"></script>
-  <title>GAME ARCADE | 無料で遊べるフリーゲーム・ブランコゲームポータル</title>
-  <meta name="description" content="ブラウザで今すぐ遊べる無料のオリジナルゲーム（フリーゲーム）が大集合！人気のブランコアクションゲーム「スウィングジャンプ」をはじめ、手軽に遊べる面白いゲームを公開しています。PC・スマホ対応。" />
+  <title>GAME ARCADE | 無料で遊べるフリーゲームポータル</title>
+  <meta name="description" content="ブラウザで今すぐ遊べる無料のオリジナルゲーム（フリーゲーム）手軽に遊べる面白いゲームを公開しています。PC・スマホ対応。" />
   <meta property="og:title" content="GAME ARCADE | 無料ブラウザゲームポータル" />
-  <meta property="og:description" content="話題のブランコゲーム「スウィングジャンプ」など、無料で遊べるフリーゲーム・ブラウザゲームを紹介しています！" />
+  <meta property="og:description" content="無料で遊べるフリーゲーム・ブラウザゲームを紹介しています！" />
   <meta property="og:type" content="website" />
 
   <!-- 構造化データ (JSON-LD) -->
@@ -18,7 +18,7 @@
     "@type": "WebSite",
     "name": "GAME ARCADE",
     "url": "https://mori618.github.io/port/", 
-    "description": "無料で遊べるブラウザゲーム（フリーゲーム）や、人気のブランコゲームを紹介するゲームポータルサイト。"
+    "description": "無料で遊べるブラウザゲーム（フリーゲーム）を紹介するゲームポータルサイト。"
   }
   </script>
 
@@ -144,6 +144,19 @@
     .game-card:active {
       transform: translateY(-2px) scale(0.99);
     }
+    .game-card.is-disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      filter: grayscale(80%);
+    }
+    .game-card.is-disabled:hover {
+      transform: none;
+      border-color: rgba(255, 255, 255, 0.07);
+      box-shadow: none;
+    }
+    .game-card.is-disabled::before {
+      display: none;
+    }
 
     /* サムネイル画像のズームエフェクト */
     .thumb-wrap { 
@@ -165,6 +178,9 @@
     .game-card:hover .thumb-wrap img {
       transform: scale(1.08);
     }
+    .game-card.is-disabled:hover .thumb-wrap img {
+      transform: none;
+    }
 
     /* プレイボタンのオーバーレイ */
     .play-overlay {
@@ -181,6 +197,9 @@
     }
     .game-card:hover .play-overlay {
       opacity: 1;
+    }
+    .game-card.is-disabled .play-overlay {
+      display: none;
     }
 
     /* タグボタン */
@@ -281,6 +300,7 @@
 
   <div id="root"></div>
 
+  <script src="./texts.js"></script>
   <script type="text/babel">
     const { useState, useEffect, useMemo, useCallback } = React;
 
@@ -312,11 +332,11 @@
 
       return (
         <div
-          className={`game-card rounded-2xl animate-fadeIn card-delay-${Math.min(index, 5)}`}
-          onClick={() => onOpen(project)}
+          className={`game-card rounded-2xl animate-fadeIn card-delay-${Math.min(index, 5)} ${project.disabled ? 'is-disabled' : ''}`}
+          onClick={() => { if (!project.disabled) onOpen(project); }}
           role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && onOpen(project)}
+          tabIndex={project.disabled ? -1 : 0}
+          onKeyDown={(e) => { if (!project.disabled && e.key === 'Enter') onOpen(project); }}
           aria-label={`${project.title} をプレイ`}
         >
           {/* サムネイル */}
@@ -335,11 +355,11 @@
             <div className="play-overlay rounded-t-2xl">
               <div className="flex flex-col items-center gap-2">
                 <div className="w-16 h-16 rounded-full bg-accent/90 flex items-center justify-center shadow-[0_0_30px_rgba(139,92,246,0.8)] backdrop-blur-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white ml-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <span className="text-white text-xs font-black tracking-widest">PLAY NOW</span>
+                <span className="text-white text-xs font-black tracking-widest">{APP_TEXTS.card.play_now}</span>
               </div>
             </div>
           </div>
@@ -348,14 +368,24 @@
           <div className="p-4">
             <div className="flex items-start justify-between gap-2 mb-2">
               <h2 className="text-white font-black text-base leading-tight">{project.title}</h2>
-              <span className="shrink-0 w-6 h-6 rounded-full bg-green-400/15 border border-green-400/40 flex items-center justify-center" title="プレイ可能">
-                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-              </span>
+              {project.in_development ? (
+                <span className="shrink-0 text-[10px] font-bold text-yellow-400 bg-yellow-400/20 px-2 py-0.5 rounded border border-yellow-400/40">{APP_TEXTS.card.in_development_badge}</span>
+              ) : (
+                <span className="shrink-0 w-6 h-6 rounded-full bg-green-400/15 border border-green-400/40 flex items-center justify-center" title={APP_TEXTS.card.playable_title}>
+                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                </span>
+              )}
             </div>
 
             <p className="text-slate-400 text-xs leading-relaxed mb-3 line-clamp-2">
               {project.description_short}
             </p>
+
+            {project.in_development && (
+              <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/20 rounded text-yellow-200/90 text-[10px] leading-tight">
+                {APP_TEXTS.card.in_development_desc}
+              </div>
+            )}
 
             {/* タグ */}
             <div className="flex flex-wrap gap-1.5">
@@ -394,7 +424,7 @@
             <button
               onClick={onClose}
               className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-red-500/80 transition-all duration-200 text-white shrink-0 border border-white/10"
-              aria-label="閉じる"
+              aria-label={APP_TEXTS.modal.close_aria}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -420,7 +450,7 @@
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center w-9 h-9 rounded-xl bg-slate-700/70 hover:bg-accent/80 transition-all duration-200 text-white shrink-0 border border-white/10"
-              title="別タブで開く"
+              title={APP_TEXTS.modal.new_tab_title}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -452,12 +482,11 @@
       useEffect(() => {
         fetch('./projects.json')
           .then(res => {
-            if (!res.ok) throw new Error('データの読み込みに失敗しました');
+            if (!res.ok) throw new Error(APP_TEXTS.status.fetch_error);
             return res.json();
           })
           .then(data => {
-            const filtered = data.filter(p => p.id === 'swing-jump');
-            setProjects(filtered);
+            setProjects(data);
             setLoading(false);
           })
           .catch(err => { setError(err.message); setLoading(false); });
@@ -499,13 +528,13 @@
             <header className="mb-14 text-center animate-slideUp">
               <div className="inline-flex items-center gap-2 mb-5 bg-slate-800/60 px-4 py-1.5 rounded-full border border-slate-700/80">
                 <span className="w-2.5 h-2.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
-                <span className="text-xs font-black tracking-[0.2em] text-slate-300">FREE TO PLAY ARCHIVE</span>
+                <span className="text-xs font-black tracking-[0.2em] text-slate-300">{APP_TEXTS.header.badge}</span>
               </div>
               <h1 className="text-6xl md:text-8xl font-black tracking-tight mb-5 neon-title italic">
-                GAME ARCADE
+                {APP_TEXTS.header.title}
               </h1>
               <p className="text-slate-400 text-base md:text-lg max-w-xl mx-auto leading-relaxed font-medium">
-                ブラウザですぐに遊べるオリジナルのフリーゲーム大集合。人気のブランコゲーム「スウィングジャンプ」など、お気に入りのゲームを見つけて今すぐ無料でプレイしよう！
+                {APP_TEXTS.header.description}
               </p>
             </header>
 
@@ -515,7 +544,7 @@
             {loading && (
               <div className="text-center py-32 text-accent">
                 <div className="inline-block w-10 h-10 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="font-black tracking-widest text-sm animate-pulse">LOADING...</p>
+                <p className="font-black tracking-widest text-sm animate-pulse">{APP_TEXTS.status.loading}</p>
               </div>
             )}
 
@@ -531,8 +560,8 @@
             {!loading && !error && filteredProjects.length === 0 && (
               <div className="text-center py-32 text-slate-500">
                 <span className="material-icons text-7xl mb-6 opacity-20 block">sports_esports</span>
-                <p className="text-xl font-bold">該当するゲームがありません</p>
-                <p className="text-sm mt-2">フィルター条件を変更してみてください。</p>
+                <p className="text-xl font-bold">{APP_TEXTS.status.empty_title}</p>
+                <p className="text-sm mt-2">{APP_TEXTS.status.empty_description}</p>
               </div>
             )}
 
@@ -554,8 +583,8 @@
 
           {/* ===== フッター ===== */}
           <footer className="mt-16 py-8 border-t border-slate-800/60 text-center text-sm font-bold text-slate-600 tracking-wider">
-            <p>© {new Date().getFullYear()} GAME ARCADE ARCHIVE.</p>
-            <p className="mt-1 text-xs font-normal text-slate-700">All systems operational.</p>
+            <p>© {new Date().getFullYear()} {APP_TEXTS.footer.copyright}</p>
+            <p className="mt-1 text-xs font-normal text-slate-700">{APP_TEXTS.footer.status}</p>
           </footer>
 
           {/* ===== ゲームモーダル ===== */}
